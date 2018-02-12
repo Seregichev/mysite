@@ -8,6 +8,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from solid_i18n.urls import solid_i18n_patterns
 from django.views.static import serve
 
 admin.autodiscover()
@@ -17,7 +18,7 @@ urlpatterns = [
         {'sitemaps': {'cmspages': CMSSitemap}}),
 ]
 
-urlpatterns += i18n_patterns(
+urlpatterns += solid_i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),  # NOQA
     url(r'^', include('cms.urls')),
 )

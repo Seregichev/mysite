@@ -101,6 +101,7 @@ TEMPLATES = [
 MIDDLEWARE = (
     'cms.middleware.utils.ApphookReloadMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'solid_i18n.middleware.SolidLocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -110,7 +111,8 @@ MIDDLEWARE = (
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware'
+    'cms.middleware.language.LanguageCookieMiddleware',
+
 )
 
 INSTALLED_APPS = (
@@ -138,12 +140,15 @@ INSTALLED_APPS = (
     'djangocms_snippet',
     'djangocms_googlemap',
     'djangocms_video',
-    'mysite'
+    'mysite',
+    'parler',
+    'aldryn_bootstrap3',
 )
 
 LANGUAGES = (
     ## Customize this
     ('ru', gettext('ru')),
+    ('en', gettext('en')),
 )
 
 CMS_LANGUAGES = {
@@ -158,8 +163,17 @@ CMS_LANGUAGES = {
             'public': True,
             'code': 'ru',
             'hide_untranslated': False,
-            'name': gettext('ru'),
+            'name': gettext('Russian'),
             'redirect_on_fallback': True,
+        },
+    ],
+    2: [
+        {
+            'public': True,
+            'code': 'en',
+            'hide_untranslated': True,
+            'name': gettext('English'),
+            'redirect_on_fallback': False,
         },
     ],
 }

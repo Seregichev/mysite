@@ -33,13 +33,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-
-
-
-
 ROOT_URLCONF = 'mysite.urls'
-
-
 
 
 # Internationalization
@@ -143,6 +137,8 @@ INSTALLED_APPS = (
     'mysite',
     'parler',
     'aldryn_bootstrap3',
+    'database_item',
+    'import_export',
 )
 
 LANGUAGES = (
@@ -166,8 +162,6 @@ CMS_LANGUAGES = {
             'name': gettext('Russian'),
             'redirect_on_fallback': True,
         },
-    ],
-    2: [
         {
             'public': True,
             'code': 'en',

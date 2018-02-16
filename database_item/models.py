@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django_hstore import hstore
+from mptt.models import MPTTModel, TreeForeignKey
+from django.utils.encoding import python_2_unicode_compatible
 
 TYPE_CURRENT_CHOICES = (
     ('AC','AC'),
@@ -11,30 +14,36 @@ TYPE_PROTECT_CLASS = (
     ('30','30'),
     ('40','40'),
 )
-
-class ItemCategory(models.Model):
+@python_2_unicode_compatible
+class ItemCategory(MPTTModel):
     name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
-    is_active = models.BooleanField(default=True, verbose_name="Активно?")
+
+    parent = TreeForeignKey('self', null=True, blank=True, default=None, related_name='children', verbose_name="Родитель")
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
 
     def __str__(self):
-        return "%s" % (self.name.encode('utf8'))
+        return '%s' % (self.name)
 
     class Meta:
         verbose_name = "Категория изделия"
         verbose_name_plural = "Категории изделий"
 
+@python_2_unicode_compatible
 class ItemManufacturer(models.Model):
     short_name = models.CharField(max_length=5, blank=True, null=True, default=None, verbose_name="Сокращение")
     name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
 
     def __str__(self):
-        return "%s" % (self.name.encode('utf8'))
+        return "%s" % (self.name)
 
     class Meta:
         verbose_name = "Производитель изделия"
         verbose_name_plural = "Производители изделий"
 
+@python_2_unicode_compatible
 class Item(models.Model):
     category = models.ForeignKey(ItemCategory, blank=True, null=True, default=None, verbose_name="Категория",
                                  on_delete=models.DO_NOTHING)
@@ -69,7 +78,7 @@ class Item(models.Model):
     depth = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Глубина")
     area = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Площадь")
 
-
+    atributes = hstore.DictionaryField(blank=True, null=True, default=None, verbose_name="Атрибуты")  # can pass attributes like null, blank, etc.
     # atributes = models.ManyToManyField('parameters.Atribute', blank=True, default=None, verbose_name="Атрибуты изделия")
 
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
@@ -79,7 +88,7 @@ class Item(models.Model):
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name="Обновленно")
 
     def __str__(self):
-        return "%s, %s" % (self.vendor_code.encode('utf8'), self.name.encode('utf8'))
+        return "%s, %s" % (self.vendor_code, self.name)
 
     class Meta:
         verbose_name = "Изделие"
@@ -90,6 +99,7 @@ class Item(models.Model):
             self.area = self.height * self.width
         super(Item, self).save(*args, **kwargs)
 
+@python_2_unicode_compatible
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, blank=True, null=True, default=None, verbose_name="Изделие",
                              on_delete=models.DO_NOTHING)

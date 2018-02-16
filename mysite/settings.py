@@ -139,6 +139,9 @@ INSTALLED_APPS = (
     'aldryn_bootstrap3',
     'database_item',
     'import_export',
+    'django_hstore',
+    'mptt',
+    'django_mptt_admin',
 )
 
 LANGUAGES = (
@@ -185,19 +188,27 @@ CMS_PLACEHOLDER_CONF = {}
 
 DATABASES = {
     'default': {
-        'CONN_MAX_AGE': 0,
+        # 'CONN_MAX_AGE': 0,
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'HOST': 'localhost',
         # 'NAME': 'project.db',
         # 'PASSWORD': '',
         # 'PORT': '',
         # 'USER': ''
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangodatabase',
-        'HOST': 'localhost',
+
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'djangodatabase',
+        # 'HOST': 'localhost',
+        # 'USER': 'root',
+        # 'PASSWORD': '41104110',
+        # 'PORT': ''
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'django_db',
         'USER': 'root',
         'PASSWORD': '41104110',
-        'PORT': ''
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 

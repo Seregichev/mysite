@@ -5,18 +5,20 @@ from django.contrib import admin
 from .models import *
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
+from django_mptt_admin.admin import DjangoMpttAdmin
 
 # класс выводит изображения изделия внизу карточки товара
 class ItemImageInline(admin.TabularInline):
     model = ItemImage
     extra = 0
 
-class ItemCategoryAdmin (admin.ModelAdmin):
+class ItemCategoryAdmin (DjangoMpttAdmin):
 
-    list_display = [field.name for field in ItemCategory._meta.fields]
+    # list_display = [field.name for field in ItemCategory._meta.fields]
 
-    class Meta:
-        model = ItemCategory
+    # class Meta:
+    #     model = ItemCategory
+    pass
 
 admin.site.register(ItemCategory, ItemCategoryAdmin)
 

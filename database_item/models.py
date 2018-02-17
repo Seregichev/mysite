@@ -34,7 +34,6 @@ class ItemCategory(MPTTModel):
 class ItemManufacturer(models.Model):
     short_name = models.CharField(max_length=5, blank=True, null=True, default=None, verbose_name="Сокращение")
     name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
-    is_active = models.BooleanField(default=True, verbose_name="Активно?")
 
     def __str__(self):
         return "%s" % (self.name)

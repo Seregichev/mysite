@@ -13,7 +13,8 @@
 
         <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'bootstrap/css/sticky-footer.css' %}">
-{#        <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">#}
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{#      <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">#}
         <style type="text/css">
             .nav {
                 padding-left: 0;
@@ -40,11 +41,8 @@
     </head>
     <body>
         {% cms_toolbar %}
-
-        <!-- Navigation -->
         <nav class="navbar navbar-default">
             <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header page-scroll">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                         <span class="sr-only">Меню</span>
@@ -52,29 +50,24 @@
                     </button>
                     <a class="navbar-brand" href="/">Виктор Серегичев</a>
                 </div>
-
-                <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         {% show_menu 0 100 100 100 %}
                     </ul>
                 </div>
-                <!-- /.navbar-collapse -->
             </div>
-            <!-- /.container -->
         </nav>
-
-        <div class="container">
+        <div class="container base-content">
             {% static_placeholder "top" %}
             {% block content %}{% endblock content %}
         </div>
+
         <footer class="footer">
             <div class="container">
                 {% static_placeholder "footer" %}
             </div>
         </footer>
         {% render_block "js" %}
-        <script src="{% static 'jquery/jquery-2.2.4.js' %}"></script>
         <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
     </body>
 </html>

@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'django_hstore',
     'mptt',
     'django_mptt_admin',
+    'calculation'
 )
 
 LANGUAGES = (
@@ -180,7 +181,9 @@ CMS_TEMPLATES = (
     ('fullwidth.html', 'Fullwidth'),
     ('sidebar_left.html', 'Sidebar Left'),
     ('sidebar_right.html', 'Sidebar Right'),
-    ('plugins/hello_plugin.html', 'Hello Plugin')
+    ('plugins/hello_plugin.html', 'Hello Plugin'),
+    ('apps/calculate.html', 'Calculate'),
+    ('apps/estimate.html', 'Estimate')
 
 )
 

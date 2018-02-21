@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load cms_tags staticfiles sekizai_tags menu_tags thumbnail %}
+
+{% block content %}
+    <!-- НУЖНО УБРАТЬ ДЛЯ СЕО оптимизации -->
+    <script src="{% static 'jquery/jquery-2.2.4.js' %}"></script>
+    <script src="{% static 'js/united_row.js' %}"></script>
+
+    <h1 class="text-center">Расчеты</h1>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        {% for calculate in calculates %}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                  <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#id-{{ calculate.id }}" aria-expanded="true" aria-controls="id-{{ calculate.id }}">
+                      {{ calculate.calculate_name }}
+                    </a>
+                  </h4>
+                </div>
+                <div id="id-{{ calculate.id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+                        <table class="table table-hover" id="table-calculation-{{ calculate.id }}">
+                            <thead>
+                                <tr>
+                                    <th>Назначение</th>
+                                    <th>Категория</th>
+                                    <th>Название</th>
+                                    <th>Артикул</th>
+                                    <th>Цена</th>
+                                    <th>Кол-во</th>
+                                    <th>Стоимость</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in item_in_calculate %}
+                                    {% if calculate.id == item.calculate_id %}
+                                        <tr>
+                                            <td id="{{ item.id }}" data-uuid="{{ item.uuid_id }}">{{ item.comment}}</td>
+                                            <td>{{ item.item.category}}</td>
+                                            <td>{{ item.item.name}}</td>
+                                            <td>{{ item.item.vendor_code}}</td>
+                                            <td>{{ item.price_per_item}}</td>
+                                            <td>{{ item.nmb}}</td>
+                                            <td>{{ item.total_price}}</td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            <tr class="">
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>Итого:</th>
+                                <td>{{ calculate.total_price}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    groupCellTable(document.getElementById('table-calculation-{{ calculate.id }}'), 0, 1);
+                });
+            </script>
+        {% endfor %}
+    </div>
+{% endblock content %}

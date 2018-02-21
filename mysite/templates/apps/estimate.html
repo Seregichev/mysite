@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load cms_tags staticfiles sekizai_tags menu_tags thumbnail %}
+
+{% block content %}
+    <!-- НУЖНО УБРАТЬ ДЛЯ СЕО оптимизации -->
+    <script src="{% static 'jquery/jquery-2.2.4.js' %}"></script>
+    <script src="{% static 'js/united_row.js' %}"></script>
+
+    <h1 class="text-center">Смета</h1>
+    <table class="table table-hover" id="table-calculation-{{ calculate.id }}">
+        <thead>
+            <tr>
+                <th>Назначение</th>
+                <th>Категория</th>
+                <th>Название</th>
+                <th>Артикул</th>
+                <th>Цена</th>
+                <th>Кол-во</th>
+                <th>Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in estimate %}
+                <tr>
+                    <td id="{{ item.id }}" data-uuid="{{ item.uuid_id }}">{{ item.comment}}</td>
+                    <td>{{ item.item.category}}</td>
+                    <td>{{ item.item.name}}</td>
+                    <td>{{ item.item.vendor_code}}</td>
+                    <td>{{ item.price_per_item}}</td>
+                    <td>{{ item.nmb}}</td>
+                    <td>{{ item.total_price}}</td>
+                </tr>
+            {% endfor %}
+{#        <tr class="">#}
+{#            <td></td>#}
+{#            <td></td>#}
+{#            <td></td>#}
+{#            <td></td>#}
+{#            <td></td>#}
+{#            <th>Итого:</th>#}
+{#            <td>{{ estimate.total_price}}</td>#}
+{#        </tr>#}
+        </tbody>
+    </table>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            groupCellTable(document.getElementById('table-calculation-{{ calculate.id }}'), 0, 1);
+        });
+    </script>
+{% endblock content %}

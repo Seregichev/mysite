@@ -16,12 +16,13 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^sitemap\.xml$', sitemap,
         {'sitemaps': {'cmspages': CMSSitemap}}),
+    url(r'^captcha/', include('captcha.urls')),
 ]
 
 urlpatterns += solid_i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),  # NOQA
     url(r'^', include('cms.urls')),
-    url(r'^', include('cms.urls')),
+
 )
 
 # This is only needed when using runserver.

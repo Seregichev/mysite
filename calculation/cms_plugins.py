@@ -4,11 +4,12 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from cms.models import CMSPlugin
 from django.utils.translation import ugettext_lazy as _
+from database_item.models import Item
 from django.utils.encoding import python_2_unicode_compatible
 
 # Плагин приветсвия
 @python_2_unicode_compatible
-class HelloPluginSetting(CMSPlugin):
+class CalcDrivePluginSetting(CMSPlugin):
     welcome = models.CharField(_(u'Приветсвие'), max_length=128, null=True, blank=True)
     afterword = models.TextField(_(u'Послесовие'), max_length=256, null=True, blank=True)
     unnamed_name = models.CharField(_(u'Имя неавторизованного'), max_length=128, null=True, blank=True)
@@ -23,10 +24,10 @@ class HelloPluginSetting(CMSPlugin):
 
 
 @plugin_pool.register_plugin
-class HelloPlugin(CMSPluginBase):
+class CalcDrivePlugin(CMSPluginBase):
 
-    module = _("Plugins")
-    name = _("Hello Plugin")
-    model = HelloPluginSetting
-    render_template = "plugins/hello_plugin.html"
+    module = _(u"Калькуляторы")
+    name = _(u"Коммутация привода")
+    model = CalcDrivePluginSetting
+    render_template = "plugins/calc/calc_drive.html"
 

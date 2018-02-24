@@ -200,7 +200,10 @@ CMS_TEMPLATES = (
     ('sidebar_right.html', 'Sidebar Right'),
     ('plugins/hello_plugin.html', 'Hello Plugin'),
     ('apps/calculate.html', 'Calculate'),
-    ('apps/estimate.html', 'Estimate')
+    ('apps/estimate.html', 'Estimate'),
+    ('plugins/calc/calc_drive.html', 'Commute Drive'),
+    ('plugins/calc/calc_form.html', 'Calculate Form'),
+    ('plugins/calc/calc_form.html', 'Calculate Form'),
 
 )
 

@@ -1,0 +1,9 @@
+{% load cms_tags %}
+<form action="" method="post" class="{{ instance.tag_class }}" style="{{ instance.tag_style }}">{% csrf_token %}
+    <input class="hidden" type="text" name='appointment' value='{{ instance.appointment }}'>
+    <div class="plugin_parent">
+    {% for plugin in instance.child_plugin_instances %}
+        {% render_plugin plugin %}
+    {% endfor %}
+    </div>
+</form>

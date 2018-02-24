@@ -2,6 +2,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView
 from .models import Calculate, ItemInEstimate, ItemInCalculate
+from database_item.models import ItemManufacturer
 
 class CalculateList(ListView):
     template_name = "apps/calculate.html"

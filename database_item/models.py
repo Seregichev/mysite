@@ -78,7 +78,6 @@ class Item(models.Model):
     area = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Площадь")
 
     atributes = hstore.DictionaryField(blank=True, null=True, default=None, verbose_name="Атрибуты")  # can pass attributes like null, blank, etc.
-    # atributes = models.ManyToManyField('parameters.Atribute', blank=True, default=None, verbose_name="Атрибуты изделия")
 
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="---Цена---")

@@ -1,13 +1,21 @@
 {% extends "base.html" %}
 {% load cms_tags staticfiles sekizai_tags menu_tags thumbnail %}
 
+
 {% block content %}
-    <!-- НУЖНО УБРАТЬ ДЛЯ СЕО оптимизации -->
-    <script src="{% static 'jquery/jquery-2.2.4.js' %}"></script>
-    <script src="{% static 'js/united_row.js' %}"></script>
+
+    {% addtoblock "js" %}<script type="text/javascript" src="{{ STATIC_URL }}jquery/jquery-2.2.4.js"></script>{% endaddtoblock %}
+    {% addtoblock "js" %}<script type="text/javascript" src="{{ STATIC_URL }}js/united_row.js"></script>{% endaddtoblock %}
+    {% addtoblock "js" %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            groupCellTable(document.getElementById('table-estimate'), 0, 1);
+        });
+    </script>
+    {% endaddtoblock %}
 
     <h1 class="text-center">Смета</h1>
-    <table class="table table-hover" id="table-calculation-{{ calculate.id }}">
+    <table class="table table-hover" id="table-estimate">
         <thead>
             <tr>
                 <th>Назначение</th>
@@ -42,9 +50,4 @@
 {#        </tr>#}
         </tbody>
     </table>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            groupCellTable(document.getElementById('table-calculation-{{ calculate.id }}'), 0, 1);
-        });
-    </script>
 {% endblock content %}

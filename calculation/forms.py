@@ -1,15 +1,31 @@
 from django import forms
 from database_item.models import Item, ItemManufacturer
 
+class CalcForm (forms.Form):
+    comment = forms.CharField(required=True, widget=forms.TextInput(
+        attrs={'placeholder': u'Назначение', 'class': 'form-control'}),
+                              )
+
 class CalcDriveForm (forms.Form):
 
-    # обозначаем в параметре inital как форма добавления изделий комутации электродвигателя
-    appointment = forms.IntegerField(widget=forms.HiddenInput(), initial='add_power_items')
+    TYPE_COMMUTATION = (
+        ('Streight', u'Прямой пуск'),
+        ('SoftStart', u'Устройство плавного пуска'),
+        ('FreqConvert', u'Частотный преобразователь'),
+    )
 
+    TYPE_COMMUNICATION = (
+        ('Discret', u'Дискретный'),
+        ('Analog', u'Аналоговый'),
+        ('Profinet', u'ProfiNet'),
+        ('Profibus', u'PofiBus'),
+        ('Ethernet', u'EtherNet'),
+        ('RS485', u'RS485'),
+        ('RS485', u'RS232'),
+    )
 
-    comment = forms.CharField(required=True, widget=forms.TextInput(
-                                attrs={'placeholder': u'Назначение', 'class': 'form-control'}),
-                                )
+    calc_drive = forms.IntegerField(widget=forms.HiddenInput(), initial='1')
+
 
     voltage = forms.ModelChoiceField(queryset=Item.objects.filter(is_active=True).values_list('voltage', flat=True)\
                                     .order_by('voltage').distinct(),
@@ -22,13 +38,9 @@ class CalcDriveForm (forms.Form):
                                    empty_label=u'Мощность',
                                    widget=forms.Select(attrs={'class': 'form-control'})
                                    )
-    # TODO:Определиться с типом ( наверное список) и добавить вывод в шаблон
-    # type = forms.ModelChoiceField(queryset=Parameter.objects.filter(
-    #                                 category=CategoryParameter.objects.filter(name=u'Способ пуска',is_active=True),
-    #                                 is_active=True),
-    #                                 error_messages={'required': 'Пожалуйста выберите способ пуска'},
-    #                                 widget = forms.Select(attrs={'class': 'form-control'}),
-    #                                 )
+
+    type = forms.ChoiceField(choices=TYPE_COMMUTATION, widget = forms.Select(attrs={'class': 'form-control'}),
+                                  )
 
     choise_reverse = forms.BooleanField(label='Функция Реверс',
                                         help_text=u'Добавляет в схему дополнительные изделия для запуска двигателя в обратную сторону',
@@ -38,12 +50,9 @@ class CalcDriveForm (forms.Form):
                                        help_text=u'Добавляет в схему дополнительные изделия для реализации Bypass',
                                        required=False
                                        )
-    # TODO:Определиться с атрибутами (наверное список) и добавить вывод в шаблон
-    # atributes = forms.ModelChoiceField(queryset=Atribute.objects.filter(
-    #     category=CategoryAtribute.objects.filter(name=u'Коммуникация', is_active=True), is_active=True),
-    #     label='Атрибуты', required=False,
-    #     widget=forms.Select(attrs={'class': 'form-control'})
-    #     )
+
+    atributes = forms.ChoiceField(choices=TYPE_COMMUNICATION, widget = forms.Select(attrs={'class': 'form-control'}),
+                                  )
 
     manufacturer = forms.ModelChoiceField(queryset=ItemManufacturer.objects.all()\
                                             .values_list('name', flat=True).distinct(),

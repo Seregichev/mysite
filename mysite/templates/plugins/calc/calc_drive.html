@@ -1,11 +1,6 @@
 {% load cms_tags %}
 <div class="{{ instance.tag_class }}" style="{{ instance.tag_style }}">
-    <input class="hidden" type="text" name='commute_drive' value='1'>
-    <div class="form-group input-group">
-        <div class="input-group-addon">{{ instance.comment }}</div>
-        {{ commute_drive.comment }}
-    </div>
-    <hr>
+    {{ commute_drive.calc_drive }}
     <div class="form-group input-group">
         {{ commute_drive.voltage }}
         <div class="input-group-addon">{{ instance.voltage }}</div>

@@ -6,13 +6,12 @@ from cms.models import CMSPlugin
 from django.utils.translation import ugettext_lazy as _
 from database_item.models import Item, ItemManufacturer
 from django.utils.encoding import python_2_unicode_compatible
-from .forms import CalcDriveForm
+from .forms import CalcForm, CalcDriveForm
 
 
 # Плагин визализации силовой коммутации привода
 @python_2_unicode_compatible
 class CalcDrivePluginSetting(CMSPlugin):
-    comment = models.CharField(_(u'Приставка назначения'), max_length=64, null=True, blank=True, default=_(u'Привод'))
     type = models.CharField(_(u'Название поля типа коммутации'), max_length=64, null=True, blank=True,
                             default=_(u'Тип пуска'))
     voltage = models.CharField(_(u'Единица измерения напряжения'), max_length=16, null=True, blank=True,
@@ -42,7 +41,6 @@ class CalcDrivePlugin(CMSPluginBase):
     require_parent = True
 
     def render(self, context, instance, placeholder):
-        # context['manufacturers'] = ItemManufacturer.objects.all()
         context['commute_drive'] = CalcDriveForm(context['request'].POST or None)
         context = super(CalcDrivePlugin, self).render(context, instance, placeholder)
         return context
@@ -71,13 +69,13 @@ class CalcSubmitPlugin(CMSPluginBase):
 # Плагин добавления формы расчета и добавления в смету
 @python_2_unicode_compatible
 class CalcFormPluginSetting(CMSPlugin):
-    name = models.CharField(_(u'Название'), max_length=128, null=True, blank=True, default=_(u'Калькулятор'))
+    comment = models.CharField(_(u'Приставка назначения'), max_length=64, null=True, blank=True, default=_(u'Привод'))
 
     tag_class = models.CharField(_(u'HTML класс'), max_length=256, null=True, blank=True)
     tag_style = models.CharField(_(u'HTML стиль'), max_length=256, null=True, blank=True)
 
     def get_title(self):
-        return self.name
+        return self.comment
 
     def __str__(self):
         return self.get_title()
@@ -92,11 +90,19 @@ class CalcFormPlugin(CMSPluginBase):
     allow_children = True
 
     def render(self, context, instance, placeholder):
+
+        context['form'] = CalcForm(context['request'].POST or None)
+
         request = context['request']
         if request.method == 'POST':
             data = request.POST
             print(data)
-            print(data['appointment'])
+            print(data['comment'])
+
+            if not request.POST._mutable:
+                request.POST._mutable = True
+
+            request.POST["comment"] = ''
 
         context = super(CalcFormPlugin, self).render(context, instance, placeholder)
         return context

@@ -4,14 +4,15 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from cms.models import CMSPlugin
 from django.utils.translation import ugettext_lazy as _
-from database_item.models import Item, ItemManufacturer
 from django.utils.encoding import python_2_unicode_compatible
 from .forms import CalcForm, CalcDriveForm
-
+from .formula import *
+from database_item.models import ItemCategory
 
 # Плагин визализации силовой коммутации привода
 @python_2_unicode_compatible
 class CalcDrivePluginSetting(CMSPlugin):
+
     type = models.CharField(_(u'Название поля типа коммутации'), max_length=64, null=True, blank=True,
                             default=_(u'Тип пуска'))
     voltage = models.CharField(_(u'Единица измерения напряжения'), max_length=16, null=True, blank=True,
@@ -22,8 +23,8 @@ class CalcDrivePluginSetting(CMSPlugin):
                             default=_(u'Дополнительно'))
     atribute = models.CharField(_(u'Приставка атрибутов'), max_length=64, null=True, blank=True,
                             default=_(u'Интерфейс'))
-    manufacture_item = models.CharField(_(u'Приставка производителя комплектующих'), max_length=64, null=True, blank=True,
-                                default=_(u'Производитель'))
+    manufacture_item = models.CharField(_(u'Приставка производителя комплектующих'), max_length=64, null=True,
+                                        blank=True, default=_(u'Производитель'))
     manufacture_terminal = models.CharField(_(u'Приставка производителя клемм'), max_length=64, null=True, blank=True,
                                         default=_(u'Клеммы'))
 
@@ -97,12 +98,23 @@ class CalcFormPlugin(CMSPluginBase):
         if request.method == 'POST':
             data = request.POST
             print(data)
-            print(data['comment'])
+
+
+            user = request.user
+
+            if data["calc_drive"] == '1':
+                add_commute_drive_items_in_estimate(user=user, request=request)
 
             if not request.POST._mutable:
                 request.POST._mutable = True
 
             request.POST["comment"] = ''
+
+            # Примеры сообщений
+            # messages.info(request, 'Three credits remain in your account.')
+            # messages.success(request, 'Profile details updated.')
+            # messages.warning(request, 'Your account expires in three days.')
+            # messages.error(request, 'Document deleted.')
 
         context = super(CalcFormPlugin, self).render(context, instance, placeholder)
         return context

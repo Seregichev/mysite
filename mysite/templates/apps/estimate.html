@@ -30,7 +30,18 @@
         <tbody>
             {% for item in estimate %}
                 <tr>
-                    <td id="{{ item.id }}" data-uuid="{{ item.uuid_id }}">{{ item.comment}}</td>
+                    <td id="{{ item.id }}" data-uuid="{{ item.uuid_id }}">
+                        <form class="form-inline" action="" method="post">{% csrf_token %}
+                            <div class="form-grop">
+                                {{ item.comment}}
+                                <input class="hidden" type="text" name='appointment' value='delete_items'>
+                                <input class="hidden" type="text" name='uuid_id' value='{{ item.uuid_id }}'>
+                                <button type="submit" class="close" data-dismiss="modal" aria-label="Close" title="Удалить">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </form>
+                    </td>
                     <td>{{ item.item.category}}</td>
                     <td>{{ item.item.name}}</td>
                     <td>{{ item.item.vendor_code}}</td>

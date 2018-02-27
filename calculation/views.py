@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views.generic import ListView
 from .models import Calculate, ItemInEstimate, ItemInCalculate
 from database_item.models import ItemManufacturer
+from .formula import delete_uuid_id_in_estimate
 
 class CalculateList(ListView):
     template_name = "apps/calculate.html"
@@ -26,3 +27,12 @@ class EstimateList(ListView):
 
     def get_queryset(self):
         return ItemInEstimate.objects.filter(user=self.request.user)
+
+    # функция удаления из сметы изделий по uuid
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST':
+            data = request.POST
+            user = request.user
+            if data["appointment"] == 'delete_items':
+                request = delete_uuid_id_in_estimate(request=request, user=user, uuid_id=data["uuid_id"])
+        return self.get(request, *args, **kwargs)

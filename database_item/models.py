@@ -3,6 +3,7 @@ from django.db import models
 from django_hstore import hstore
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.encoding import python_2_unicode_compatible
+from decimal import Decimal
 
 TYPE_CURRENT_CHOICES = (
     ('AC','AC'),
@@ -95,6 +96,16 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if self.height > 0 and self.width and self.area == 0:
             self.area = self.height * self.width
+        if self.type_current == 'AC':
+            if self.current > 0 and self.power == 0:
+                self.power = (self.voltage * self.current * Decimal('0.89')) / 1000
+            if self.power > 0 and self.current == 0:
+                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage) * Decimal('0.89')))
+        elif self.type_current == 'DC':
+            if self.current > 0 and self.power == 0:
+                self.power = (self.voltage * self.current) / 1000
+            if self.power > 0 and self.current == 0:
+                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage)))
         super(Item, self).save(*args, **kwargs)
 
 @python_2_unicode_compatible

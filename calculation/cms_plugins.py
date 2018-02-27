@@ -103,7 +103,7 @@ class CalcFormPlugin(CMSPluginBase):
             user = request.user
 
             if data["calc_drive"] == '1':
-                add_commute_drive_items_in_estimate(user=user, request=request)
+                add_commute_drive_items_into_estimate(user=user, request=request)
 
             if not request.POST._mutable:
                 request.POST._mutable = True

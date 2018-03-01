@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from .models import *
+from .models import ItemInEstimate
 from django.contrib import messages
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
 from uuid import uuid4
-from database_item.models import ItemCategory
+from database_item.models import ItemCategory, Item
+from decimal import Decimal
 
 # функция добавления изделия в смету или выдачи ошибки
 def created_item_in_estimate(request, user,  uuid_id, item_id, is_active, nmb, comment):
@@ -21,13 +22,13 @@ def created_item_in_estimate(request, user,  uuid_id, item_id, is_active, nmb, c
 def delete_uuid_id_in_estimate(request, user, uuid_id):
     delete_items = ItemInEstimate.objects.filter(uuid_id=uuid_id, user=user)
     delete_items.delete()
-    messages.warning(request, 'Изделия из сметы удалены.')
+    messages.warning(request, 'Выбранные изделия из сметы удалены.')
     return request
 
-def add_item(request, category, manufacturer, power, voltage, user, uuid_id, nmb, comment):
+def add_commute_drive_item(request, category, manufacturer, current, voltage, user, uuid_id, nmb, comment):
 
     if manufacturer == None or manufacturer == '':
-        item = Item.objects.filter(category=category, power__gte=power, voltage__gte=voltage,
+        item = Item.objects.filter(category=category, current__gte=current, voltage__gte=voltage,
                                    is_active=True).first()
     else:
         item = Item.objects.filter(category=category, manufacturer__name=manufacturer, power__gte=power,
@@ -63,6 +64,9 @@ def add_commute_drive_items_into_estimate(user, request):
     choise_reverse = data.get('choise_reverse', False)
     choise_bypass = data.get('choise_bypass', False)
 
+    # формула расчета тока по мощности и напряжению для подбора коммутации привода
+    current =((Decimal(power) * Decimal(1000)) / (Decimal(voltage) * Decimal('0.8')))
+
     # получаем категории из списка категорий
     Category_Disconnector = ItemCategory.objects.filter(name__startswith='Рубильник').first()
     Category_CircuitBreaker = ItemCategory.objects.filter(name__startswith='Автоматический выключатель').first()
@@ -70,22 +74,28 @@ def add_commute_drive_items_into_estimate(user, request):
     Category_FreqConverter = ItemCategory.objects.filter(name__startswith='Устройство плавного пуска').first()
     Category_SoftStarter = ItemCategory.objects.filter(name__startswith='Частотный преобразователь').first()
 
-    request = add_item(request, category=Category_Disconnector, manufacturer=manufacturer, power=power,
+    request = add_commute_drive_item(request, category=Category_Disconnector, manufacturer=manufacturer, current=current,
                        voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
-    request = add_item(request, category=Category_CircuitBreaker, manufacturer=manufacturer, power=power,
+    request = add_commute_drive_item(request, category=Category_CircuitBreaker, manufacturer=manufacturer, current=current,
                        voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
     if type == 'Streight':
-        request = add_item(request, category=Category_Contactor, manufacturer=manufacturer, power=power,
+        request = add_commute_drive_item(request, category=Category_Contactor, manufacturer=manufacturer, current=current,
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
     elif type == 'SoftStart':
-        request = add_item(request, category=Category_Contactor, manufacturer=manufacturer, power=power,
+        request = add_commute_drive_item(request, category=Category_Contactor, manufacturer=manufacturer, current=current,
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
-        request = add_item(request, category=Category_SoftStarter, manufacturer=manufacturer, power=power,
+        request = add_commute_drive_item(request, category=Category_SoftStarter, manufacturer=manufacturer, current=current,
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
     elif type == 'FreqConvert':
-        request = add_item(request, category=Category_Contactor, manufacturer=manufacturer, power=power,
+        request = add_commute_drive_item(request, category=Category_Contactor, manufacturer=manufacturer, current=current,
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
-        request = add_item(request, category=Category_SoftStarter, manufacturer=manufacturer, power=power,
+        request = add_commute_drive_item(request, category=Category_FreqConverter, manufacturer=manufacturer, current=current,
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
 
+    # TODO: Убрать лишние поля в БД и настроить логику на поиск и добавление по атрибутам
+    # TODO: Настроить импорт экспорт данных полей
+    # temp = Item.objects.filter(atributes__contains='a').first()
+    # print(temp.id)
+    # temp = Item.objects.get(id=temp.id).atributes['a']
+    # print(temp)
     return locals()

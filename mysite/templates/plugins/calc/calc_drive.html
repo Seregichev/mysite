@@ -2,12 +2,14 @@
 <div class="{{ instance.tag_class }}" style="{{ instance.tag_style }}">
     {{ commute_drive.calc_drive }}
     <div class="form-group input-group">
-        {{ commute_drive.voltage }}
         <div class="input-group-addon">{{ instance.voltage }}</div>
+        {{ commute_drive.voltage }}
+        <div class="input-group-addon">{{ instance.voltage_unit }}</div>
     </div>
     <div class="form-group input-group">
-        {{ commute_drive.power }}
         <div class="input-group-addon">{{ instance.power }}</div>
+        {{ commute_drive.power }}
+        <div class="input-group-addon">{{ instance.power_unit }}</div>
     </div>
     <div class="form-group input-group">
         <div class="input-group-addon">{{ instance.type }}</div>

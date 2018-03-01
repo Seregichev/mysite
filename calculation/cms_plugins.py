@@ -13,12 +13,16 @@ from database_item.models import ItemCategory
 @python_2_unicode_compatible
 class CalcDrivePluginSetting(CMSPlugin):
 
-    type = models.CharField(_(u'Название поля типа коммутации'), max_length=64, null=True, blank=True,
+    type = models.CharField(_(u'Название поля выбора типа коммутации'), max_length=64, null=True, blank=True,
                             default=_(u'Тип пуска'))
-    voltage = models.CharField(_(u'Единица измерения напряжения'), max_length=16, null=True, blank=True,
+    voltage = models.CharField(_(u'Название поля выбора напряжения'), max_length=16, null=True, blank=True,
+                               default=_(u'Напряжение'))
+    voltage_unit = models.CharField(_(u'Единица измерения напряжения'), max_length=16, null=True, blank=True,
                             default=_(u'[ В ]'))
-    power = models.CharField(_(u'Единица измерения мощности'), max_length=16, null=True, blank=True,
-                               default=_(u'[ кВт ]'))
+    power = models.CharField(_(u'Название поля выбора мощности'), max_length=16, null=True, blank=True,
+                               default=_(u'Мощность'))
+    power_unit = models.CharField(_(u'Единица измерения мощности'), max_length=16, null=True, blank=True,
+                             default=_(u'[ кВт ]'))
     more = models.CharField(_(u'Название ссылки доп параметров'), max_length=64, null=True, blank=True,
                             default=_(u'Дополнительно'))
     atribute = models.CharField(_(u'Приставка атрибутов'), max_length=64, null=True, blank=True,
@@ -109,12 +113,6 @@ class CalcFormPlugin(CMSPluginBase):
                 request.POST._mutable = True
 
             request.POST["comment"] = ''
-
-            # Примеры сообщений
-            # messages.info(request, 'Three credits remain in your account.')
-            # messages.success(request, 'Profile details updated.')
-            # messages.warning(request, 'Your account expires in three days.')
-            # messages.error(request, 'Document deleted.')
 
         context = super(CalcFormPlugin, self).render(context, instance, placeholder)
         return context

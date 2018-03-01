@@ -100,7 +100,7 @@ class Item(models.Model):
             if self.current > 0 and self.power == 0:
                 self.power = (self.voltage * self.current * Decimal('0.89')) / 1000
             if self.power > 0 and self.current == 0:
-                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage) * Decimal('0.89')))
+                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage) * Decimal('0.8')))
         elif self.type_current == 'DC':
             if self.current > 0 and self.power == 0:
                 self.power = (self.voltage * self.current) / 1000

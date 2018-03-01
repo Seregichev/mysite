@@ -29,13 +29,11 @@ class CalcDriveForm (forms.Form):
 
     voltage = forms.ModelChoiceField(queryset=Item.objects.filter(is_active=True).values_list('voltage', flat=True)\
                                     .order_by('voltage').distinct(),
-                                     empty_label=u'Напряжение',
                                      widget=forms.Select(attrs={'class': 'form-control'})
                                      )
 
     power = forms.ModelChoiceField(queryset=Item.objects.filter(is_active=True).values_list('power', flat=True)\
                                    .order_by('power').distinct(),
-                                   empty_label=u'Мощность',
                                    widget=forms.Select(attrs={'class': 'form-control'})
                                    )
 

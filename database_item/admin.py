@@ -1,28 +1,56 @@
 # -*- coding: utf-8 -*-
 
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ImportExportActionModelAdmin
 from django.contrib import admin
 from .models import *
-from import_export import resources, fields
-from import_export.widgets import ForeignKeyWidget
+from import_export import resources, fields, widgets
 from django_mptt_admin.admin import DjangoMpttAdmin
+import json
+
+class JSONWidget(widgets.Widget):
+    """ Convert data into JSON for serialization.
+    """
+    def clean(self, value, row=None, *args, **kwargs):
+        return json.loads(value)
+
+    def render(self, value, obj=None):
+        if value is None:
+            return ""
+        return json.dumps(value)
+
+class JSONResourceMixin(object):
+    """ Override ModelResource to provide JSON field support.
+    """
+
+    @classmethod
+    def widget_from_django_field(cls, f, default=widgets.Widget):
+
+        if f.get_internal_type() in ('SerializedDictionaryField',):
+            return JSONWidget
+        else:
+            return super().widget_from_django_field(f)
+
 
 # класс выводит изображения изделия внизу карточки товара
 class ItemImageInline(admin.TabularInline):
     model = ItemImage
     extra = 0
 
-class ItemCategoryAdmin (DjangoMpttAdmin):
+class CategoryResource(resources.ModelResource):
 
-    # list_display = [field.name for field in ItemCategory._meta.fields]
+    class Meta:
+        model = ItemCategory
+        fields = ('id', 'name',)
+        exclude = ('parent',)
 
-    # class Meta:
-    #     model = ItemCategory
-    pass
+class ItemCategoryAdmin (ImportExportModelAdmin, DjangoMpttAdmin):
+    mptt_level_indent = 20
+    resource_class = CategoryResource
+    empty_value_display = '-empty-'
 
 admin.site.register(ItemCategory, ItemCategoryAdmin)
 
-class ItemManufacturerAdmin (admin.ModelAdmin):
+class ItemManufacturerAdmin (ImportExportActionModelAdmin):
 
     list_display = [field.name for field in ItemManufacturer._meta.fields]
 
@@ -31,16 +59,16 @@ class ItemManufacturerAdmin (admin.ModelAdmin):
 
 admin.site.register(ItemManufacturer, ItemManufacturerAdmin)
 
-class ItemAdminResource(resources.ModelResource):
-    category = fields.Field(column_name='category', attribute='category', widget=ForeignKeyWidget(ItemCategory, 'name'))
-    manufacturer = fields.Field(column_name='manufacturer', attribute='manufacturer', widget=ForeignKeyWidget(ItemManufacturer, 'name'))
+class ItemAdminResource(JSONResourceMixin, resources.ModelResource):
+    category = fields.Field(column_name='category', attribute='category', widget=widgets.ForeignKeyWidget(ItemCategory, 'name'))
+    manufacturer = fields.Field(column_name='manufacturer', attribute='manufacturer', widget=widgets.ForeignKeyWidget(ItemManufacturer, 'name'))
 
     class Meta:
         model = Item
 
+
 class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорта используется скаченная библиотека django-import-export
 
-    # list_display = [field.name for field in Item._meta.fields]
     list_display = ('id', 'category', 'vendor_code', 'name', 'manufacturer', 'series', 'voltage', 'power', 'is_active',
                     'price', 'currency', 'created', 'updated')
     list_display_links = ('id', 'name', 'vendor_code')
@@ -49,6 +77,8 @@ class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорт�
     search_fields = ['vendor_code', 'power']
 
     resource_class = ItemAdminResource
+    empty_value_display = '-empty-'
+
 
 admin.site.register(Item, ItemAdmin)
 

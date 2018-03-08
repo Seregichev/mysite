@@ -94,7 +94,7 @@ TEMPLATES = [
                 'django.template.loaders.filesystem.Loader',
                 'aldryn_boilerplates.template_loaders.AppDirectoriesLoader',
                 # 'django.template.loaders.app_directories.Loader',
-                'django.template.loaders.eggs.Loader'
+                'django.template.loaders.eggs.Loader',
             ],
         },
     },
@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'django.contrib.sitemaps',
     'django.contrib.staticfiles',
     'django.contrib.messages',
+    'django.contrib.postgres',
     'cms',
     'menus',
     'sekizai',

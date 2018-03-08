@@ -18,8 +18,7 @@ TYPE_PROTECT_CLASS = (
 @python_2_unicode_compatible
 class ItemCategory(MPTTModel):
     name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
-
-    parent = TreeForeignKey('self', null=True, blank=True, default=None, related_name='children', verbose_name="Родитель")
+    parent = TreeForeignKey('self', null=True, blank=True, default=None, related_name='children', verbose_name="Родитель", db_index=True)
 
     class MPTTMeta:
         order_insertion_by = ['name']
@@ -78,7 +77,10 @@ class Item(models.Model):
     depth = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Глубина")
     area = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Площадь")
 
-    atributes = hstore.DictionaryField(blank=True, null=True, default=None, verbose_name="Атрибуты")  # can pass attributes like null, blank, etc.
+    variables = hstore.SerializedDictionaryField( blank=True, null=True, default=dict, db_index=True, verbose_name=u"Переменные")
+    # TODO: вывести поля в горизонтальном виде
+
+    objects = hstore.HStoreManager()
 
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="---Цена---")
@@ -100,12 +102,12 @@ class Item(models.Model):
             if self.current > 0 and self.power == 0:
                 self.power = (self.voltage * self.current * Decimal('0.89')) / 1000
             if self.power > 0 and self.current == 0:
-                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage) * Decimal('0.8')))
+                self.current = (Decimal(self.power) * Decimal(1000) / (Decimal(self.voltage) * Decimal('0.8')))
         elif self.type_current == 'DC':
             if self.current > 0 and self.power == 0:
                 self.power = (self.voltage * self.current) / 1000
             if self.power > 0 and self.current == 0:
-                self.current = (Decimal(self.power * 1000) / (Decimal(self.voltage)))
+                self.current = (Decimal(self.power) * Decimal(1000) / (Decimal(self.voltage)))
         super(Item, self).save(*args, **kwargs)
 
 @python_2_unicode_compatible

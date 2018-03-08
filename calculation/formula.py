@@ -31,7 +31,7 @@ def add_commute_drive_item(request, category, manufacturer, current, voltage, us
         item = Item.objects.filter(category=category, current__gte=current, voltage__gte=voltage,
                                    is_active=True).first()
     else:
-        item = Item.objects.filter(category=category, manufacturer__name=manufacturer, power__gte=power,
+        item = Item.objects.filter(category=category, manufacturer__name=manufacturer, current__gte=current,
                                voltage__gte=voltage,
                                is_active=True).first()
 
@@ -93,9 +93,5 @@ def add_commute_drive_items_into_estimate(user, request):
                            voltage=voltage, user=user, uuid_id=uuid_id, nmb=1, comment=comment)
 
     # TODO: Убрать лишние поля в БД и настроить логику на поиск и добавление по атрибутам
-    # TODO: Настроить импорт экспорт данных полей
-    # temp = Item.objects.filter(atributes__contains='a').first()
-    # print(temp.id)
-    # temp = Item.objects.get(id=temp.id).atributes['a']
-    # print(temp)
+
     return locals()

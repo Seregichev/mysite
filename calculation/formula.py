@@ -94,4 +94,5 @@ def add_commute_drive_items_into_estimate(user, request):
 
     # TODO: Убрать лишние поля в БД и настроить логику на поиск и добавление по атрибутам
 
+
     return locals()

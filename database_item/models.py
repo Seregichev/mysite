@@ -4,6 +4,9 @@ from django_hstore import hstore
 from mptt.models import MPTTModel, TreeForeignKey
 from django.utils.encoding import python_2_unicode_compatible
 from decimal import Decimal
+from tinymce.models import HTMLField
+from filer.fields.image import FilerImageField
+from djmoney.models.fields import MoneyField
 
 TYPE_CURRENT_CHOICES = (
     ('AC','AC'),
@@ -51,40 +54,25 @@ class Item(models.Model):
     series = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Серия")
     name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
     vendor_code = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Артикул")
-    description = models.TextField(blank=True, null=True, default=None, verbose_name="Описание")
+    description = HTMLField(blank=True, null=True, default=None, verbose_name="Описание")
 
     voltage = models.DecimalField(max_digits=7, decimal_places=0, default=0, verbose_name="Напряжение [В]")
     current = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name="Ток [А]")
     type_current = models.CharField(choices=TYPE_CURRENT_CHOICES, max_length=3, blank=True, null=True, default='AC',
                                     verbose_name="Вид тока")
     power = models.DecimalField(max_digits=7, decimal_places=2, default=0, verbose_name="Мощность [кВт]")
-    temperature_protect = models.CharField(choices=TYPE_PROTECT_CLASS, max_length=3, blank=True, null=True, default=None,
-                                    verbose_name="Класс тепловой защиты")
-
-    force_input = models.DecimalField(max_digits=2, decimal_places=0, default=0, verbose_name="Силовые входы [шт]")
-
-    discret_input = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name="Дискретные входы [шт]")
-    discret_output = models.DecimalField(max_digits=4, decimal_places=0, default=0,
-                                         verbose_name="Дискретные выходы [шт]")
-    analog_input = models.DecimalField(max_digits=4, decimal_places=0, default=0, verbose_name="Аналоговые входы [шт]")
-    analog_output = models.DecimalField(max_digits=4, decimal_places=0, default=0,
-                                        verbose_name="Аналоговые выходы [шт]")
-    temperature_input = models.DecimalField(max_digits=4, decimal_places=0, default=0,
-                                            verbose_name="Температурные входы [шт]")
 
     height = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Высота")
     width = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Ширина")
     depth = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Глубина")
     area = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Площадь")
 
-    variables = hstore.SerializedDictionaryField( blank=True, null=True, default=dict, db_index=True, verbose_name=u"Переменные")
-    # TODO: вывести поля в горизонтальном виде
+    variables = hstore.DictionaryField(blank=True, null=True, default=dict, db_index=True, verbose_name=u"Переменные")
 
     objects = hstore.HStoreManager()
 
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="---Цена---")
-    currency = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Валюта")
+    price = MoneyField(max_digits=10, decimal_places=2, default_currency='EUR', verbose_name="Цена")
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name="Создано")
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name="Обновленно")
 
@@ -113,8 +101,8 @@ class Item(models.Model):
 @python_2_unicode_compatible
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, blank=True, null=True, default=None, verbose_name="Изделие",
-                             on_delete=models.DO_NOTHING)
-    image = models.ImageField (upload_to='items_images/', verbose_name="Изображение")
+                             on_delete=models.CASCADE)
+    image = FilerImageField(null=True, blank=True, verbose_name="Изображение", on_delete=models.CASCADE)
     is_main = models.BooleanField(default=False, verbose_name="Основное?")
     is_active = models.BooleanField(default=True, verbose_name="Активно?")
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name="Создано")

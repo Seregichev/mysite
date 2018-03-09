@@ -6,6 +6,7 @@ from .models import *
 from import_export import resources, fields, widgets
 from django_mptt_admin.admin import DjangoMpttAdmin
 import json
+from django_admin_hstore_widget.forms import HStoreFormField
 
 class JSONWidget(widgets.Widget):
     """ Convert data into JSON for serialization.
@@ -25,7 +26,7 @@ class JSONResourceMixin(object):
     @classmethod
     def widget_from_django_field(cls, f, default=widgets.Widget):
 
-        if f.get_internal_type() in ('SerializedDictionaryField',):
+        if f.get_internal_type() in ('DictionaryField',):
             return JSONWidget
         else:
             return super().widget_from_django_field(f)
@@ -70,14 +71,17 @@ class ItemAdminResource(JSONResourceMixin, resources.ModelResource):
 class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорта используется скаченная библиотека django-import-export
 
     list_display = ('id', 'category', 'vendor_code', 'name', 'manufacturer', 'series', 'voltage', 'power', 'is_active',
-                    'price', 'currency', 'created', 'updated')
+                    'price')
     list_display_links = ('id', 'name', 'vendor_code')
-    list_editable = ('is_active', 'price', 'currency')
+    list_editable = ('is_active', 'price')
     list_filter = ['category', 'manufacturer', 'power']
     search_fields = ['vendor_code', 'power']
 
+    inlines = [ItemImageInline]
+
     resource_class = ItemAdminResource
     empty_value_display = '-empty-'
+
 
 
 admin.site.register(Item, ItemAdmin)

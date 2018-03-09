@@ -161,6 +161,9 @@ INSTALLED_APPS = (
     'captcha',
     'emailit',
 
+    'tinymce',
+
+    'djmoney',
 )
 
 LANGUAGES = (

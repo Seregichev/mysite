@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^sitemap\.xml$', sitemap,
         {'sitemaps': {'cmspages': CMSSitemap}}),
     url(r'^captcha/', include('captcha.urls')),
+    url(r'^tinymce/', include('tinymce.urls')),
 ]
 
 urlpatterns += solid_i18n_patterns(

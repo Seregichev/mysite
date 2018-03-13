@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from djmoney.models.fields import MoneyField
 
+
 @python_2_unicode_compatible
 class Calculate(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE, verbose_name="Пользователь")
@@ -25,6 +26,7 @@ class Calculate(models.Model):
 
     def save(self, *args, **kwargs):
         super(Calculate, self).save(*args, **kwargs)
+
 
 @python_2_unicode_compatible
 class ItemInCalculate(models.Model):
@@ -52,6 +54,7 @@ class ItemInCalculate(models.Model):
         self.total_price = int(self.nmb) * self.price_per_item
 
         super(ItemInCalculate, self).save(*args, **kwargs)
+
 
 @python_2_unicode_compatible
 class ItemInEstimate(models.Model):
@@ -92,5 +95,6 @@ def item_in_calculate_post_save(sender,instance,created,**kwargs):
 
     instance.calculate.total_price = calculate_total_price
     instance.calculate.save(force_update=True)
+
 
 post_save.connect(item_in_calculate_post_save, sender=ItemInCalculate)

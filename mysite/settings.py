@@ -119,7 +119,6 @@ MIDDLEWARE = (
 )
 
 INSTALLED_APPS = (
-    'djangocms_admin_style',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -164,7 +163,16 @@ INSTALLED_APPS = (
     'tinymce',
 
     'djmoney',
+
+    'users',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'users.auth_backends.CustomUserModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+CUSTOM_USER_MODEL = 'users.CustomUser'
 
 LANGUAGES = (
     ## Customize this
@@ -255,3 +263,11 @@ THUMBNAIL_PROCESSORS = (
 ALDRYN_BOILERPLATE_NAME='bootstrap3'
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
+CURRENCIES = ('USD', 'EUR', 'RUB')
+CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €'), ('RUB', 'RUB ₽')]
+
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/auth/login/'
+LOGOUT_URL = '/auth/logout/'
+# TODO : Настроить авторизацию пользователя

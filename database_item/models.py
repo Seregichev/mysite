@@ -53,7 +53,7 @@ class Item(models.Model):
     manufacturer = models.ForeignKey(ItemManufacturer, blank=True, null=True, default=None,
                                      verbose_name=u"Производитель", on_delete=models.DO_NOTHING)
     series = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name=u"Серия")
-    name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name=u"Название")
+    name = models.CharField(max_length=256, blank=True, null=True, default=None, verbose_name=u"Название")
     vendor_code = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name=u"Артикул")
     compatibility_code = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name=u"Код совместимости")
     description = HTMLField(blank=True, null=True, default=None, verbose_name=u"Описание")

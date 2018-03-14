@@ -21,20 +21,11 @@
     <div class="collapse" id="collapseAdding">
         <hr>
         <div class="form-group input-group">
-            <div class="input-group-addon">{{ instance.atribute }}</div>
-            {{ commute_drive.atributes }}
-        </div>
-        <div class="form-group input-group">
             <div class="input-group-addon">{{ instance.manufacture_item }}</div>
             {{ commute_drive.manufacturer }}
         </div>
-        <div class="form-group">
-            {{ commute_drive.choise_reverse.label }} - {{ commute_drive.choise_reverse }}
-            <span class="glyphicon glyphicon-question-sign white-spase-left" title="{{ commute_drive.choise_reverse.help_text }}" aria-hidden="true"></span>
-        </div>
-        <div class="form-group">
-            {{ commute_drive.choise_bypass.label }} - {{ commute_drive.choise_bypass }}
-            <span class="glyphicon glyphicon-question-sign white-spase-left" title="{{ commute_drive.choise_bypass.help_text }}" aria-hidden="true"></span>
+        <div class="checkbox-inline">
+            {{ commute_drive.attributes }}
         </div>
         <hr>
         <div class="form-group input-group">

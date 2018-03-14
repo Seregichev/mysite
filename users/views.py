@@ -16,7 +16,10 @@ def login_view(request):
             user = login_form.login(request)
             if user:
                 login(request, user)
-                return redirect(request.META.get('HTTP_REFERER', '/'))
+                if request.GET.get('next'):
+                    return redirect(request.GET.get('next'))
+                else:
+                    return redirect(request.META.get('HTTP_REFERER', '/'))
 
     return render(request, 'users/auth/login.html', {'login_form': login_form, })
 

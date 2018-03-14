@@ -114,5 +114,6 @@ class CalcFormPlugin(CMSPluginBase):
 
             request.POST["comment"] = ''
 
+
         context = super(CalcFormPlugin, self).render(context, instance, placeholder)
         return context

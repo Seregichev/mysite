@@ -1,5 +1,5 @@
 from django import forms
-from database_item.models import Item, ItemManufacturer
+from database_item.models import Item, ItemManufacturer, ItemCategory
 
 
 class CalcForm (forms.Form):
@@ -33,41 +33,43 @@ class CalcDriveForm (forms.Form):
         ('FreqConvert', u'Частотный преобразователь'),
     )
 
-    TYPE_ATTRIBUTES = (
-        ('reverse', u'Реверс'),
-        ('bypass', 'Bypass'),
-        ('discret_input', u'Дискретный входы'),
-        ('discret_output', u'Дискретные выходы'),
-        ('analog_input', u'Аналоговые входы'),
-        ('analog_output', u'Аналоговые выходы'),
-        ('profinet', 'ProfiNet'),
-        ('profibus', 'PofiBus'),
-        ('rs485', 'RS485'),
-    )
-
     calc_drive = forms.IntegerField(widget=forms.HiddenInput(), initial='1')
 
-    voltage=forms.ChoiceField(choices=CHOISES_VOLTAGE, widget=forms.Select(attrs={'class': 'form-control'}),)
+    calc_drive_voltage=forms.ChoiceField(choices=CHOISES_VOLTAGE, widget=forms.Select(attrs={'class': 'form-control'}),)
 
-    power = forms.ChoiceField(choices=CHOISES_POWER, widget=forms.Select(attrs={'class': 'form-control'}),)
+    calc_drive_power = forms.ChoiceField(choices=CHOISES_POWER, widget=forms.Select(attrs={'class': 'form-control'}),)
 
-    type = forms.ChoiceField(choices=TYPE_COMMUTATION, widget=forms.Select(attrs={'class': 'form-control'}),)
+    calc_drive_type = forms.ChoiceField(choices=TYPE_COMMUTATION, widget=forms.Select(attrs={'class': 'form-control'}),)
 
-    manufacturer = forms.ModelChoiceField(queryset=ItemManufacturer.objects.all()\
-                                          .values_list('name', flat=True).distinct(),
+    # Получаем всех производителей из родительской категории
+    calc_drive_manufacturer = forms.ModelChoiceField(queryset=ItemManufacturer.objects\
+                                                     .filter(item__category__in=ItemCategory.objects.get(name=u'Силовая коммутация')\
+                                                             .get_descendants(include_self=True))\
+                                                     .values_list('name', flat=True)\
+                                                     .distinct(),
                                           required=False,
                                           widget=forms.Select(attrs={'class': 'form-control'})
                                           )
-    attributes = forms.MultipleChoiceField(choices=TYPE_ATTRIBUTES,
-                                          widget=forms.CheckboxSelectMultiple(),
-                                          initial={
-                                              'discret_input': 1, 'discret_output': 1,
-                                              'analog_input': 1, 'analog_output': 1,
-                                          }
-                                  )
 
+    # category = ItemCategory.objects.get(id=1)
+    # branch_categories = ItemCategory.objects.get(id=1).get_descendants(include_self=True)
+    # print(branch_categories)
+    # print(ItemManufacturer.objects.filter(item__category__in=ItemCategory.objects.get(id=1).get_descendants(include_self=True)).values_list('name', flat=True).distinct())
 
-    manufacturer_terminals = forms.ModelChoiceField(queryset=ItemManufacturer.objects.all()\
+    if (Item.objects.filter(variables__contains='bypass')):
+        print(Item.objects.filter(variables__contains='bypass'))
+
+    calc_drive_reverse = forms.BooleanField(widget=forms.CheckboxInput(), label=u'Реверс', required=False)
+    calc_drive_bypass = forms.BooleanField(widget=forms.CheckboxInput(), label='Bypass', required=False)
+    calc_drive_discret_input = forms.BooleanField(widget=forms.CheckboxInput(), label=u'Дискретные входы', required=False)
+    calc_drive_discret_output = forms.BooleanField(widget=forms.CheckboxInput(), label=u'Дискретные выходы', required=False)
+    calc_drive_analog_input = forms.BooleanField(widget=forms.CheckboxInput(), label=u'Аналоговые входы', required=False)
+    calc_drive_analog_output = forms.BooleanField(widget=forms.CheckboxInput(), label=u'Аналоговые выходы', required=False)
+    calc_drive_profinet = forms.BooleanField(widget=forms.CheckboxInput(), label='ProfiNet', required=False)
+    calc_drive_profibus = forms.BooleanField(widget=forms.CheckboxInput(), label='PofiBus', required=False)
+    calc_drive_rs485 = forms.BooleanField(widget=forms.CheckboxInput(), label='RS485', required=False)
+
+    calc_drive_manufacturer_terminals = forms.ModelChoiceField(queryset=ItemManufacturer.objects.all()\
                                             .values_list('name', flat=True).distinct(),
                                             required=False,
                                             widget=forms.Select(attrs={'class': 'form-control'})

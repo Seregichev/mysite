@@ -1,5 +1,5 @@
 {% load cms_tags sekizai_tags %}
-<form action="" method="post" class="{{ instance.tag_class }}" style="{{ instance.tag_style }}">{% csrf_token %}
+<form action="" method="post" class="{{ instance.tag_class }}" id="calc_form" style="{{ instance.tag_style }}">{% csrf_token %}
     {% if messages %}
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-message alert-dismissible">

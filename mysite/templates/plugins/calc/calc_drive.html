@@ -1,19 +1,19 @@
-{% load cms_tags %}
-<div class="{{ instance.tag_class }}" style="{{ instance.tag_style }}">
+{% load cms_tags staticfiles sekizai_tags %}
+<div class="{{ instance.tag_class }}" id="calc_drive" style="{{ instance.tag_style }}">
     {{ commute_drive.calc_drive }}
     <div class="form-group input-group">
         <div class="input-group-addon">{{ instance.voltage }}</div>
-        {{ commute_drive.voltage }}
+        {{ commute_drive.calc_drive_voltage }}
         <div class="input-group-addon">{{ instance.voltage_unit }}</div>
     </div>
     <div class="form-group input-group">
         <div class="input-group-addon">{{ instance.power }}</div>
-        {{ commute_drive.power }}
+        {{ commute_drive.calc_drive_power }}
         <div class="input-group-addon">{{ instance.power_unit }}</div>
     </div>
     <div class="form-group input-group">
         <div class="input-group-addon">{{ instance.type }}</div>
-        {{ commute_drive.type }}
+        {{ commute_drive.calc_drive_type }}
     </div>
     <a class="form-control text-center" role="button" data-toggle="collapse" href="#collapseAdding" aria-expanded="false" aria-controls="collapseAdding">
       {{ instance.more }}
@@ -22,16 +22,64 @@
         <hr>
         <div class="form-group input-group">
             <div class="input-group-addon">{{ instance.manufacture_item }}</div>
-            {{ commute_drive.manufacturer }}
+            {{ commute_drive.calc_drive_manufacturer }}
         </div>
-        <div class="checkbox-inline">
-            {{ commute_drive.attributes }}
+        <div class="form-group" id="commute_drive_attribute">
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_reverse.id_for_label }}">
+                {{ commute_drive.calc_drive_reverse }}{{ commute_drive.calc_drive_reverse.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_bypass.id_for_label }}">
+                {{ commute_drive.calc_drive_bypass }}{{ commute_drive.calc_drive_bypass.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_discret_input.id_for_label }}">
+                {{ commute_drive.calc_drive_discret_input }}{{ commute_drive.calc_drive_discret_input.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_discret_output.id_for_label }}">
+                {{ commute_drive.calc_drive_discret_output }}{{ commute_drive.calc_drive_discret_output.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_analog_input.id_for_label }}">
+                {{ commute_drive.calc_drive_analog_input }}{{ commute_drive.calc_drive_analog_input.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_analog_output.id_for_label }}">
+                {{ commute_drive.calc_drive_analog_output }}{{ commute_drive.calc_drive_analog_output.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_profinet.id_for_label }}">
+                {{ commute_drive.calc_drive_profinet }}{{ commute_drive.calc_drive_profinet.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_profibus.id_for_label }}">
+                {{ commute_drive.calc_drive_profibus }}{{ commute_drive.calc_drive_profibus.label }}
+            </div>
+            <div class="checkbox" id="div_{{ commute_drive.calc_drive_rs485.id_for_label }}">
+                {{ commute_drive.calc_drive_rs485 }}{{ commute_drive.calc_drive_rs485.label }}
+            </div>
         </div>
         <hr>
         <div class="form-group input-group">
             <div class="input-group-addon">{{ instance.manufacture_terminal }}</div>
-            {{ commute_drive.manufacturer_terminals }}
+            {{ commute_drive.calc_drive_manufacturer_terminals }}
         </div>
     </div>
     <hr>
 </div>
+{% addtoblock "js" %}<script type="text/javascript" src="{{ STATIC_URL }}jquery/jquery-2.2.4.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(function(){
+    $('#id_calc_drive_type').on("change",function() {
+           var val = $(this).val();
+           if (val == 'Streight' ) {
+               $('#div_id_calc_drive_reverse, #div_id_calc_drive_bypass').show();
+               $('#div_id_calc_drive_discret_input, #div_id_calc_drive_discret_output, #div_id_calc_drive_analog_input, #div_id_calc_drive_analog_output, #div_id_calc_drive_profinet, #div_id_calc_drive_profibus, #div_id_calc_drive_rs485').hide();
+           }
+           if (val == 'SoftStart') {
+               $('#div_id_calc_drive_discret_input, #div_id_calc_drive_discret_output').show();
+               $('#div_id_calc_drive_reverse, #div_id_calc_drive_bypass, #div_id_calc_drive_analog_input, #div_id_calc_drive_analog_output, #div_id_calc_drive_profinet, #div_id_calc_drive_profibus, #div_id_calc_drive_rs485').hide();
+           }
+           if (val == 'FreqConvert') {
+               $('#div_id_calc_drive_reverse, #div_id_calc_drive_bypass').hide();
+               $('#div_id_calc_drive_discret_input, #div_id_calc_drive_discret_output, #div_id_calc_drive_analog_input, #div_id_calc_drive_analog_output, #div_id_calc_drive_profinet, #div_id_calc_drive_profibus, #div_id_calc_drive_rs485').show();
+           }
+        });
+     });
+</script>
+{% endaddtoblock %}

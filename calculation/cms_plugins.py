@@ -9,7 +9,8 @@ from .forms import CalcForm, CalcDriveForm
 from .formula import *
 from database_item.models import ItemCategory
 
-# Плагин визализации силовой коммутации привода
+
+# Плагин настройки отображения плагина визализации силовой коммутации привода
 @python_2_unicode_compatible
 class CalcDrivePluginSetting(CMSPlugin):
 
@@ -36,6 +37,7 @@ class CalcDrivePluginSetting(CMSPlugin):
     tag_style = models.CharField(_(u'HTML стиль'), max_length=256, null=True, blank=True)
 
 
+# Плагин визализации силовой коммутации привода
 @plugin_pool.register_plugin
 class CalcDrivePlugin(CMSPluginBase):
 
@@ -47,10 +49,12 @@ class CalcDrivePlugin(CMSPluginBase):
 
     def render(self, context, instance, placeholder):
         context['commute_drive'] = CalcDriveForm(context['request'].POST or None)
+        context['commute_drive'].fields['calc_drive_reverse'].widget.attrs['disabled'] = True
         context = super(CalcDrivePlugin, self).render(context, instance, placeholder)
         return context
 
-# Плагин добавления кнопки отправки формы
+
+# Плагин настройки отображения плагина добавления кнопки отправки формы
 @python_2_unicode_compatible
 class CalcSubmitPluginSetting(CMSPlugin):
     name = models.CharField(_(u'Название'), max_length=32, null=True, blank=True, default=_(u'Отправить'))
@@ -59,6 +63,8 @@ class CalcSubmitPluginSetting(CMSPlugin):
     tag_class = models.CharField(_(u'HTML класс div'), max_length=256, null=True, blank=True, default='form-group')
     tag_style = models.CharField(_(u'HTML стиль div'), max_length=256, null=True, blank=True)
 
+
+# Плагин настройки отображения плагина добавления кнопки отправки формы
 @plugin_pool.register_plugin
 class CalcSubmitPlugin(CMSPluginBase):
     module = _(u"Калькуляторы")
@@ -71,7 +77,8 @@ class CalcSubmitPlugin(CMSPluginBase):
         context = super(CalcSubmitPlugin, self).render(context, instance, placeholder)
         return context
 
-# Плагин добавления формы расчета и добавления в смету
+
+# Плагин настройки отображения плагина добавления самой формы расчета и отправки в смету
 @python_2_unicode_compatible
 class CalcFormPluginSetting(CMSPlugin):
     comment = models.CharField(_(u'Приставка назначения'), max_length=64, null=True, blank=True, default=_(u'Привод'))
@@ -85,6 +92,8 @@ class CalcFormPluginSetting(CMSPlugin):
     def __str__(self):
         return self.get_title()
 
+
+# Плагин добавления самой формы расчета и отправки в смету
 @plugin_pool.register_plugin
 class CalcFormPlugin(CMSPluginBase):
 

@@ -10,7 +10,7 @@ class CalculationApphook(CMSApp):
     name = gettext('Расчеты')
 
     def get_urls(self, page=None, language=None, **kwargs):
-        return ["calculation.urls"]
+        return ["calculation.urls_calculation"]
 
 @apphook_pool.register  # register the application
 class EstimateApphook(CMSApp):

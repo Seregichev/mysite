@@ -11,6 +11,24 @@
         $(document).ready(function () {
             groupCellTable(document.getElementById('table-estimate'), 0, 1);
         });
+
+        $(function() {
+          $('form').submit(function(e) {
+            var data = {};
+            var $form = $(this);
+
+            data = $form.serialize();
+            $.ajax({
+              type: $form.attr('method'),
+              url: $form.attr('action'),
+              data: data
+            }).done(function(receive) {
+              $("body").html(receive);
+            }).fail(function() {
+            });
+            e.preventDefault();
+          });
+        });
     </script>
     {% endaddtoblock %}
 
@@ -50,15 +68,15 @@
                     <td>{{ item.total_price}}</td>
                 </tr>
             {% endfor %}
-{#        <tr class="">#}
-{#            <td></td>#}
-{#            <td></td>#}
-{#            <td></td>#}
-{#            <td></td>#}
-{#            <td></td>#}
-{#            <th>Итого:</th>#}
-{#            <td>{{ estimate.total_price}}</td>#}
-{#        </tr>#}
+        <tr class="">
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <th>Итого:</th>
+            <td>{{ estimate_price.sum }}</td>
+        </tr>
         </tbody>
     </table>
 {% endblock content %}

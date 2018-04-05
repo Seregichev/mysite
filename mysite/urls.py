@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^captcha/', include('captcha.urls')),
     url(r'^tinymce/', include('tinymce.urls')),
     url(r'^auth/', include('users.urls')),
+    url(r'^', include('calculation.urls')),
 ]
 
 urlpatterns += solid_i18n_patterns(

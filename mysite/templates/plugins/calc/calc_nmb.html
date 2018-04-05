@@ -1,0 +1,5 @@
+{% load cms_tags sekizai_tags %}
+<div class="form-group input-group {{ instance.tag_class }}" style="{{ instance.tag_style }}">
+    <div class="input-group-addon">{{ instance.name }}</div>
+    {{ form_calc_nmb.calc_nmb }}
+</div>

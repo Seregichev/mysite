@@ -24,7 +24,6 @@ class CustomUser(User):
     company = models.ForeignKey(Company, blank=True, null=True, default=None, verbose_name=u"Компания",
                              on_delete=models.CASCADE)
 
-    # Use UserManager to get the create_user method, etc.
     objects = UserManager()
 
 

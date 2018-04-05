@@ -6,6 +6,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 from django.utils.encoding import python_2_unicode_compatible
 from djmoney.models.fields import MoneyField
+from django.contrib.postgres.fields import JSONField
 
 
 @python_2_unicode_compatible
@@ -41,6 +42,8 @@ class ItemInCalculate(models.Model):
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
+    input_query = JSONField(blank=True, null=True, default=None)
+
     def __str__(self):
         return u"%s" % self.item.name
 
@@ -65,10 +68,12 @@ class ItemInEstimate(models.Model):
     price_per_item = MoneyField(max_digits=10, decimal_places=2, default=0)
     total_price = MoneyField(max_digits=10, decimal_places=2, default=0) #price_per_item * nmb
     is_active = models.BooleanField(default=True)
-    user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE,
-                             verbose_name="Пользователь")
+    user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
+
+    input_query = JSONField(blank=True, null=True, default=dict, db_index=True)
+
 
     def __str__(self):
         return "%s" % self.item.name

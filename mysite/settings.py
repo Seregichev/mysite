@@ -270,3 +270,5 @@ CURRENCY_CHOICES = [('USD', 'USD $'), ('EUR', 'EUR €'), ('RUB', 'RUB ₽')]
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/auth/login/'
 LOGOUT_URL = '/auth/logout/'
+
+COSINE_PHI = 0.8

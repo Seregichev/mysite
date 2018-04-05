@@ -1,12 +1,14 @@
 {% load cms_tags sekizai_tags %}
-<form action="" method="post" class="{{ instance.tag_class }}" id="calc_form" style="{{ instance.tag_style }}">{% csrf_token %}
+<form action="" method="post" class="calc_form {{ instance.tag_class }}" id="calc_form-{{ instance.id }}" style="{{ instance.tag_style }}">{% csrf_token %}
     {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-message alert-dismissible">
+        <div class="alert alert-warning alert-message alert-dismissible">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ message }}
+            <ul class="messages">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
         </div>
-        {% endfor %}
     {% endif %}
     <input class="hidden" type="text" name='comment' value='{{ instance.comment }}'>
     <div class="form-group input-group">
@@ -26,13 +28,44 @@
 {% addtoblock "js" %}
 <script type="text/javascript">
     $(document).ready( function(){
-       var hide_delay = 2500;  // starting timeout before first message is hidden
+       var hide_delay = 5000;  // starting timeout before first message is hidden
        var hide_next = 800;   // time in mS to wait before hiding next message
-       $(".alert-message").slideDown().each( function(index,el) {
+       $("#calc_form-{{ instance.id }} .alert-message").slideDown().each( function(index,el) {
           window.setTimeout( function(){
              $(el).slideUp();  // hide the message
           }, hide_delay + hide_next*index);
        });
+
+       var $btn = $('#calc_form-{{ instance.id }} #calc_submit_button').button('loading');
+       window.setTimeout(function () {
+                $btn.button('reset');
+                }, 1000);
+    });
+
+    $(function() {
+      $('form').submit(function(e) {
+        var data = {};
+        var $form = $(this);
+        var $btn = $('#calc_form-{{ instance.id }} #calc_submit_button').button('loading');
+
+        data = $form.serialize();
+        $.ajax({
+          type: $form.attr('method'),
+          url: $form.attr('action'),
+          data: data
+        }).done(function(receive) {
+          $("body").html(receive);
+          $btn.button('reset');
+        }).fail(function() {
+            $("#calc_form-{{ instance.id }}").prepend("<div class='alert alert-error alert-danger' role='alert'><a href='#' class='close' data-dismiss='alert' aria-label='close'>&times;</a>Нет соединения с сервером, повторите попытку.</div>");
+            window.setTimeout(function () {
+                $btn.button('reset');
+                }, 1000);
+
+        });
+        e.preventDefault();
+      });
     });
 </script>
 {% endaddtoblock %}
+{#TODO: Удалить из шаблона console.log при реализации на сервере#}

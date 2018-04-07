@@ -102,9 +102,9 @@ class ItemAdminResource(JSONResourceMixin, resources.ModelResource):
 class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорта используется скаченная библиотека django-import-export
 
     list_display = ('id', 'category', 'vendor_code', 'name', 'compatibility_code', 'manufacturer', 'series', 'voltage',
-                    'power', 'is_active', 'price', 'updated', 'created')
+                    'power', 'is_active', 'price', 'currency', 'updated', 'created')
     list_display_links = ('id', 'name', 'vendor_code')
-    list_editable = ('is_active', 'price')
+    list_editable = ('is_active', 'price', 'currency')
     list_filter = ['category', 'manufacturer', 'series', 'power', 'voltage', 'compatibility_code',]
     search_fields = ['vendor_code', 'category', 'name', 'voltage', 'series', 'power', 'compatibility_code',]
 
@@ -116,7 +116,7 @@ class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорт�
     fieldsets = (
         (None, {
             'fields': ('category', 'manufacturer', 'series', 'vendor_code', 'compatibility_code', 'name', 'description',
-                       'price', 'is_active')
+                       ('price', 'currency'), 'is_active')
         }),
         (u'Технические характеристики', {
             'classes': ('collapse',),

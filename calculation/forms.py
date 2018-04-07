@@ -100,8 +100,11 @@ class CalcDriveForm (forms.Form):
                                              label=u'RS485',
                                              required=False)
 
-    calc_drive_manufacturer_terminals = forms.ModelChoiceField(queryset=ItemManufacturer.objects.all()\
-                                            .values_list('name', flat=True).distinct(),
+    calc_drive_manufacturer_terminals = forms.ModelChoiceField(queryset=ItemManufacturer.objects\
+                                                     .filter(item__category__in=ItemCategory.objects.get(name=u'Клеммы')\
+                                                             .get_descendants(include_self=True))\
+                                                     .values_list('name', flat=True)\
+                                                     .distinct(),
                                             required=False,
                                             widget=forms.Select(attrs={'class': 'form-control'})
                                             )

@@ -13,7 +13,7 @@ from django.contrib.postgres.fields import JSONField
 class Calculate(models.Model):
     user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE, verbose_name="Пользователь")
     calculate_name = models.CharField(max_length=64, blank=True, null=True, default=None, verbose_name="Название")
-    total_price = MoneyField(max_digits=10, decimal_places=2, default=0, verbose_name="Итого")  # total price in calculate
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # total price in calculate
     comments = models.TextField(blank=True, null=True, default=None, verbose_name="Комментарий")
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name="Создано")
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name="Обновлено")
@@ -36,8 +36,8 @@ class ItemInCalculate(models.Model):
     calculate = models.ForeignKey(Calculate, blank=True, null=True, default=None, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, blank=True, null=True, default=None, on_delete=models.CASCADE)
     nmb = models.IntegerField(default=1)
-    price_per_item = MoneyField(max_digits=10, decimal_places=2, default=0)
-    total_price = MoneyField(max_digits=10, decimal_places=2, default=0) #price_per_item * nmb
+    price_per_item = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # price_per_item * nmb
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
@@ -65,14 +65,14 @@ class ItemInEstimate(models.Model):
     comment = models.CharField(max_length=128, blank=True, null=True, default=None)
     item = models.ForeignKey(Item, blank=True, null=True, default=None, on_delete=models.CASCADE)
     nmb = models.IntegerField(default=1)
-    price_per_item = MoneyField(max_digits=10, decimal_places=2, default=0)
-    total_price = MoneyField(max_digits=10, decimal_places=2, default=0) #price_per_item * nmb
+    price_per_item = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)  # price_per_item * nmb
     is_active = models.BooleanField(default=True)
     user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True, auto_now=False)
     updated = models.DateTimeField(auto_now_add=False, auto_now=True)
 
-    input_query = JSONField(blank=True, null=True, default=dict, db_index=True)
+    input_query = JSONField(blank=True, null=True, default=dict, db_index=True) # Поле хранения параметров запроса
 
 
     def __str__(self):

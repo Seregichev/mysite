@@ -18,6 +18,11 @@ TYPE_PROTECT_CLASS = (
     ('30', '30'),
     ('40', '40'),
 )
+TYPE_CURRENCY = (
+    ('RUB', '₽'),
+    ('USD', '$'),
+    ('EUR', '€')
+)
 
 @python_2_unicode_compatible
 class ItemCategory(MPTTModel):
@@ -74,7 +79,10 @@ class Item(models.Model):
     objects = hstore.HStoreManager()
 
     is_active = models.BooleanField(default=True, verbose_name=u"Активность")
-    price = MoneyField(max_digits=10, decimal_places=2, default_currency='EUR', verbose_name=u"Цена")
+    # price = MoneyField(max_digits=10, decimal_places=2, default_currency='EUR', verbose_name=u"Цена")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=u"Цена")
+    currency = models.CharField(choices=TYPE_CURRENCY, max_length=3, blank=True, null=True, default='EUR',
+                                    verbose_name=u"Валюта")
     created = models.DateTimeField(auto_now_add=True, auto_now=False, verbose_name=u"Создано")
     updated = models.DateTimeField(auto_now_add=False, auto_now=True, verbose_name=u"Обновленно")
 

@@ -63,9 +63,9 @@
                     <td>{{ item.item.category}}</td>
                     <td>{{ item.item.name}}</td>
                     <td>{{ item.item.vendor_code}}</td>
-                    <td>{{ item.price_per_item}}</td>
+                    <td>{{ item.price_per_item}} {{ item.item.currency}}</td>
                     <td>{{ item.nmb}}</td>
-                    <td>{{ item.total_price}}</td>
+                    <td>{{ item.total_price}} {{ item.item.currency}}</td>
                 </tr>
             {% endfor %}
         <tr class="">

@@ -17,18 +17,19 @@ def created_item_in_estimate(request, user,  uuid_id, item_id, is_active, nmb, c
     if created:
         if settings.DEBUG:
             messages.info(request, u'Изделие %s %s добавлено.' % (str(created.item.manufacturer.name), str(created.item.name)))
-        return created, request
     else:
         messages.error(request, u'Невозможно добавить изделие в смету. Обратитесь в тех.поддержку')
-        return created, request
+
+    return created, request
 
 
 # функция удаления из сметы всех изделий по совпадению uuid
 def delete_uuid_id_in_estimate(request, user, uuid_id):
     delete_items = ItemInEstimate.objects.filter(uuid_id=uuid_id, user=user)
-    delete_items.delete()
     if settings.DEBUG:
-        messages.warning(request, u'Изделия из сметы удалены.')
+        messages.warning(request, u'"%s" из сметы удален.' % delete_items.values_list('comment').first())
+    delete_items.delete()
+
     return request
 
 
@@ -271,7 +272,7 @@ def add_commute_drive_items_into_estimate(request):
                                                        nmb=choise_nmb, comment=comment)
 
         if created_item.discret_input < choise_discret_input:
-            request, created_item = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                                    manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                                    nmb=choise_nmb, comment=comment,
                                                    compatibility_code=created_item.compatibility_code,
@@ -280,7 +281,7 @@ def add_commute_drive_items_into_estimate(request):
                                                    check=True, manufacturer_filter_is_required=True)
 
         if created_item.discret_output < choise_discret_output:
-            request, created_item = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                                    manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                                    nmb=choise_nmb, comment=comment,
                                                    compatibility_code=created_item.compatibility_code,
@@ -298,7 +299,7 @@ def add_commute_drive_items_into_estimate(request):
                                                        nmb=choise_nmb, comment=comment)
 
         if created_item.profinet < choise_profinet:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -307,7 +308,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.profibus < choise_profibus:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -316,7 +317,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.rs485 < choise_rs485:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -325,7 +326,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.analog_input < choise_analog_input:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -334,7 +335,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.analog_output < choise_analog_output:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -343,7 +344,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.discret_input < choise_discret_input:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -351,7 +352,7 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
         elif created_item.discret_output < choise_discret_output:
-            request = add_extra_item(request=request, category_in=Category_FreqConverter,
+            request, created_extra_item = add_extra_item(request=request, category_in=Category_FreqConverter,
                                      manufacturer=created_item.manufacturer, user=user, uuid_id=uuid_id,
                                      nmb=choise_nmb, comment=comment,
                                      compatibility_code=created_item.compatibility_code,
@@ -360,12 +361,11 @@ def add_commute_drive_items_into_estimate(request):
                                      exclude_variables_name='power_input',
                                      check=True, manufacturer_filter_is_required=True)
 
-    # # Блок обработки ошибки т.к. макс ток может быть не в каждом изделии
-    # try:
-    #     current = created_item.variables['max_current']
-    # except (AttributeError, KeyError):
-    #     current = created_item.current
-    # TODO: Решить удалить или оставить выше закоменнтированную уставку
+    # Блок обработки ошибки т.к. макс ток может быть не в каждом изделии
+    try:
+        current = created_item.variables['input_current']
+    except (AttributeError, KeyError):
+        current = created_item.current
 
 
     # Обрабатываем условия реверса и bypass

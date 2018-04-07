@@ -77,8 +77,10 @@ def check_fields_in_calculator(request):
 
         items = Item.objects.filter(is_active=True)
 
-        category_terminal = ItemCategory.objects.filter(name__startswith='Клеммы').first()
-        terminal_manufacturers = items.filter(category=category_terminal).values_list('manufacturer__name', flat=True).distinct()
+        terminal_manufacturers = items.filter(category__in=ItemCategory.objects.get(name=u'Клеммы')\
+                                                            .get_descendants(include_self=True))\
+                                                            .values_list('manufacturer__name', flat=True)\
+                                                            .distinct()
 
         other_power_items = items.filter(current__gte=current, voltage__gte=choise_voltage)
 
@@ -161,7 +163,7 @@ def check_fields_in_calculator(request):
             circuitbreakers = other_power_items.filter(
                 category__in=ItemCategory.objects.get(id=Category_CircuitBreaker.id).get_descendants(include_self=True))
             contactor = other_power_items.filter(
-                category__in=ItemCategory.objects.get(id=Category_CircuitBreaker.id).get_descendants(include_self=True))
+                category__in=ItemCategory.objects.get(id=Category_Contactor.id).get_descendants(include_self=True))
 
             if circuitbreakers.exists() and contactor.exists():
                 general_checking = True

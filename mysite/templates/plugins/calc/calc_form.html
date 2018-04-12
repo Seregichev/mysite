@@ -43,7 +43,7 @@
     });
 
     $(function() {
-      $('form').submit(function(e) {
+      $('#calc_form-{{ instance.id }}').submit(function(e) {
         var data = {};
         var $form = $(this);
         var $btn = $('#calc_form-{{ instance.id }} #calc_submit_button').button('loading');

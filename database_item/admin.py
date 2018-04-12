@@ -5,6 +5,7 @@ from django.contrib import admin
 from .models import *
 from import_export import resources, fields, widgets
 from django_mptt_admin.admin import DjangoMpttAdmin
+from mptt.admin import TreeRelatedFieldListFilter
 import json
 
 
@@ -105,7 +106,7 @@ class ItemAdmin (ImportExportModelAdmin): #Для импорта-экспорт�
                     'power', 'is_active', 'price', 'currency', 'updated', 'created')
     list_display_links = ('id', 'name', 'vendor_code')
     list_editable = ('is_active', 'price', 'currency')
-    list_filter = ['category', 'manufacturer', 'series', 'power', 'voltage', 'compatibility_code',]
+    list_filter = [('category', TreeRelatedFieldListFilter), 'manufacturer', 'series', 'power', 'voltage', 'compatibility_code',]
     search_fields = ['vendor_code', 'category', 'name', 'voltage', 'series', 'power', 'compatibility_code',]
 
     inlines = [AddItemInline, ItemImageInline]

@@ -79,7 +79,7 @@ class Item(models.Model):
     objects = hstore.HStoreManager()
 
     is_active = models.BooleanField(default=True, verbose_name=u"Активность")
-    # price = MoneyField(max_digits=10, decimal_places=2, default_currency='EUR', verbose_name=u"Цена")
+
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=u"Цена")
     currency = models.CharField(choices=TYPE_CURRENCY, max_length=3, blank=True, null=True, default='EUR',
                                     verbose_name=u"Валюта")

@@ -93,7 +93,7 @@ class CalcDriveForm (forms.Form):
                                                   required=False)
     calc_drive_profibus = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
                                                                                   'pattern': '^[ 0-9]+$'}),
-                                                  label=u'PofiBus',
+                                                  label=u'ProfiBus',
                                                   required=False)
     calc_drive_rs485 = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
                                                                                   'pattern': '^[ 0-9]+$'}),
@@ -109,6 +109,147 @@ class CalcDriveForm (forms.Form):
                                             widget=forms.Select(attrs={'class': 'form-control'})
                                             )
     calc_drive_type_terminals = forms.ChoiceField(choices=TYPE_TERMINALS,
+                                                  widget=forms.Select(attrs={'class': 'form-control'}),
+                                                  required=False,
+                                                  )
+
+class CalcControlForm (forms.Form):
+
+    CHOISES_VOLTAGE = (
+        ('24', '24 ⎓'),
+        ('220', '220 ~'),
+    )
+
+    TYPE_CONTROL = (
+        (None, '-----'),
+        ('PLC', u'ПЛК'),
+        ('ProgrammableRelay', u'Программируемое реле'),
+        ('Relay', u'Релейная схема'),
+    )
+
+    TYPE_TERMINALS = (
+        (None, '-----'),
+        ('Screw', u'Винтовые'),
+        ('Spring', u'Пружинные'),
+        ('PushIn', u'Push-In'),
+    )
+
+    calc_control = forms.IntegerField(widget=forms.HiddenInput(), initial='1')
+
+    calc_control_voltage = forms.ChoiceField(choices=CHOISES_VOLTAGE,
+                                           widget=forms.Select(attrs={'class': 'form-control'}), )
+
+    calc_control_type = forms.ChoiceField(choices=TYPE_CONTROL,
+                                        widget=forms.Select(attrs={'class': 'form-control'}), )
+
+    calc_control_discret_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                  'pattern': '^[ 0-9]+$'}),
+                                                  label=u'Дискретные входы',
+                                                  required=True)
+    calc_control_discret_output = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                   'pattern': '^[ 0-9]+$'}),
+                                                   label=u'Дискретные выходы',
+                                                   required=True)
+
+    # Получаем всех производителей из родительской категории
+    calc_control_manufacturer = forms.ModelChoiceField(queryset=ItemManufacturer.objects\
+                                                     .filter(item__category__in=ItemCategory.objects.get(name=u'Управление')\
+                                                     .get_descendants(include_self=True))\
+                                                     .values_list('name', flat=True)\
+                                                     .distinct(),
+                                                     required=False,
+                                                     widget=forms.Select(attrs={'class': 'form-control'})
+                                                     )
+
+    calc_control_series = forms.ModelChoiceField(queryset=Item.objects\
+                                               .filter(category__in=ItemCategory.objects.get(name=u'Управление')
+                                               .get_descendants(include_self=True))\
+                                               .values_list('series', flat=True).distinct(),
+                                               required=False,
+                                               widget=forms.Select(attrs={'class': 'form-control'})
+                                               )
+
+    calc_control_fast_discret_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                    'pattern': '^[ 0-9]+$'}),
+                                                                                    label=u'Быстрые дискретные входы',
+                                                                                    required=False)
+
+    calc_control_fast_discret_output = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                         'pattern': '^[ 0-9]+$'}),
+                                                                                     label=u'Быстрые дискретные входы',
+                                                                                     required=False)
+
+    calc_control_analog_0_10V_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                 'pattern': '^[ 0-9]+$'}),
+                                                                                 label=u'Аналоговые 0-10V входы',
+                                                                                 required=False)
+    calc_control_analog_0_10V_output = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                  'pattern': '^[ 0-9]+$'}),
+                                                                                  label=u'Аналоговые 0-10V выходы',
+                                                                                  required=False)
+
+    calc_control_analog_0_20mA_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                   'pattern': '^[ 0-9]+$'}),
+                                                                                   label=u'Аналоговые 0(4)-20mA входы',
+                                                                                   required=False)
+    calc_control_analog_0_20mA_output = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                    'pattern': '^[ 0-9]+$'}),
+                                                                                    label=u'Аналоговые 0(4)-20mA выходы',
+                                                                                    required=False)
+
+    calc_control_analog_rtd_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                    'pattern': '^[ 0-9]+$'}),
+                                                                                    label=u'RTD входы',
+                                                                                    required=False)
+
+    calc_control_profinet = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                             'pattern': '^[ 0-9]+$'}),
+                                                                             label=u'ProfiNet',
+                                                                             required=False)
+
+    calc_control_profibus = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                             'pattern': '^[ 0-9]+$'}),
+                                                                             label=u'PofiBus',
+                                                                             required=False)
+
+    calc_control_modbus_tcp = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                            'pattern': '^[ 0-9]+$'}),
+                                                                            label=u'Modbus TCP',
+                                                                            required=False)
+
+    calc_control_modbus_rtu = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                          'pattern': '^[ 0-9]+$'}),
+                                                                          label=u'Modbus RTU',
+                                                                          required=False)
+
+    calc_control_manufacturer_relays = forms.ModelChoiceField(queryset=ItemManufacturer.objects \
+                                                                 .filter(item__category__in=ItemCategory.objects \
+                                                                         .get(name=u'Промежуточное реле') \
+                                                                         .get_descendants(include_self=True)) \
+                                                                 .values_list('name', flat=True) \
+                                                                 .distinct(),
+                                                                 required=False,
+                                                                 widget=forms.Select(attrs={'class': 'form-control'})
+                                                                 )
+
+    calc_control_series_relays = forms.ModelChoiceField(queryset=Item.objects \
+                                               .filter(category__in=ItemCategory.objects.get(name=u'Промежуточное реле') \
+                                                    .get_descendants(include_self=True)) \
+                                               .values_list('series', flat=True).distinct(),
+                                               required=False,
+                                               widget=forms.Select(attrs={'class': 'form-control'})
+                                               )
+
+
+    calc_control_manufacturer_terminals = forms.ModelChoiceField(queryset=ItemManufacturer.objects\
+                                               .filter( item__category__in=ItemCategory.objects.get(name=u'Клеммы')\
+                                                    .get_descendants(include_self=True))\
+                                               .values_list('name', flat=True)\
+                                               .distinct(),
+                                           required=False,
+                                           widget=forms.Select(attrs={'class': 'form-control'})
+                                           )
+    calc_control_type_terminals = forms.ChoiceField(choices=TYPE_TERMINALS,
                                                   widget=forms.Select(attrs={'class': 'form-control'}),
                                                   required=False,
                                                   )

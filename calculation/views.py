@@ -44,11 +44,11 @@ class EstimateList(ListView):
         return self.get(request, *args, **kwargs)
 
 
-def check_fields_in_calculator(request):
+def check_calc_drive_fields(request):
     return_dict = dict()
 
     if settings.DEBUG:
-        print(u'Запрос AJAX пришел:')
+        print(u'Запрос AJAX для привода пришел:')
         print(request.POST)
 
     if request.POST:
@@ -200,5 +200,44 @@ def check_fields_in_calculator(request):
             return_dict['terminal_manufacturers'].append(terminal_manufacturer)
 
         return_dict['general_checking'] = general_checking
+
+    return JsonResponse(return_dict)
+
+def check_calc_control_fields(request):
+    return_dict = dict()
+
+    if settings.DEBUG:
+        print(u'Запрос AJAX для управления пришел:')
+        print(request.POST)
+
+    if request.POST:
+
+        # Получаем переменные из запроса
+        data = request.POST
+
+        choise_voltage = data["calc_control_voltage"] or None
+        choise_type = data["calc_control_type"] or None
+        choise_manufacturer = data.get('calc_control_manufacturer') or None
+        choise_series = data.get('calc_control_series') or None
+        choise_relays_manufacturer = data.get('calc_control_manufacturer_relays') or None
+        choise_relays_series = data.get('calc_control_series_relays') or None
+        choise_terminal_manufacturer = data.get('calc_drive_manufacturer_terminals') or None
+        choise_type_terminals = data.get('calc_drive_type_terminals') or None
+
+        choise_discret_input = data.get('calc_control_discret_input') or None
+        choise_discret_output = data.get('calc_control_discret_output') or None
+        choise_fast_discret_input = data.get('calc_control_fast_discret_input') or None
+        choise_fast_discret_output = data.get('calc_control_fast_discret_output') or None
+        calc_control_analog_0_10V_input = data.get('calc_control_analog_0_10V_input') or None
+        calc_control_analog_0_10V_output = data.get('calc_control_analog_0_10V_output') or None
+        calc_control_analog_0_20mA_input = data.get('calc_control_analog_0_20mA_input') or None
+        calc_control_analog_0_20mA_output = data.get('calc_control_analog_0_20mA_output') or None
+        calc_control_analog_rtd_input = data.get('calc_control_analog_rtd_inpu') or None
+        calc_control_profinet = data.get('calc_control_profinet') or None
+        calc_control_profibus = data.get('calc_control_profibus') or None
+        calc_control_modbus_tcp = data.get('calc_control_modbus_tcp') or None
+        calc_control_modbus_rtu = data.get('calc_control_modbus_rtu') or None
+
+        print(data)
 
     return JsonResponse(return_dict)

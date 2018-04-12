@@ -1,0 +1,238 @@
+{% load cms_tags staticfiles sekizai_tags %}
+<div class="calc_control {{ instance.tag_class }}" id="calc_control-{{ instance.id }}" style="{{ instance.tag_style }}">
+    {{ calc_control.calc_control }}
+    <div class="form-group input-group">
+        <div class="input-group-addon">{{ instance.voltage }}</div>
+        {{ calc_control.calc_control_voltage }}
+        <div class="input-group-addon">{{ instance.voltage_unit }}</div>
+    </div>
+    <div class="form-group input-group">
+        <div class="input-group-addon">{{ instance.type }}</div>
+        {{ calc_control.calc_control_type }}
+    </div>
+    {% if instance.show_input_output %}
+        <div class="form-group input-group" id="div_{{ calc_control.calc_control_discret_input.id_for_label }}">
+            <div class="input-group-addon">{{ instance.discret_input }}</div>
+            {{ calc_control.calc_control_discret_input }}
+        </div>
+        <div class="form-group input-group" id="div_{{ calc_control.calc_control_discret_output.id_for_label }}">
+            <div class="input-group-addon">{{ instance.discret_output }}</div>
+            {{ calc_control.calc_control_discret_output }}
+        </div>
+    {% endif %}
+    {% for plugin in instance.child_plugin_instances %}
+        {% render_plugin plugin %}
+    {% endfor %}
+    <a id="calc_control_more_button-{{ instance.id }}" class="form-control text-center" role="button" data-toggle="collapse" href="#collapseAdding_CalcControlAddFields-{{ instance.id }}" aria-expanded="false" aria-controls="collapseAdding_CalcControlAddFields-{{ instance.id }}">
+      {{ instance.more }}
+    </a>
+    <div class="collapse" id="collapseAdding_CalcControlAddFields-{{ instance.id }}">
+        <hr>
+        <div class="form-group input-group">
+            <div class="input-group-addon">{{ instance.manufacture_item }}</div>
+            {{ calc_control.calc_control_manufacturer }}
+        </div>
+        <div class="form-group input-group">
+            <div class="input-group-addon">{{ instance.series_item }}</div>
+            {{ calc_control.calc_control_series }}
+        </div>
+        <hr>
+        <div class="form-group" id="calc_control_attribute">
+            {% if instance.show_input_output %}
+                <div class="input-group calc_plc" id="div_{{ calc_control.calc_control_fast_discret_input.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_fast_discret_input.label }}</div>
+                    {{ calc_control.calc_control_fast_discret_input }}
+                </div>
+                <div class="input-group calc_plc" id="div_{{ calc_control.calc_control_fast_discret_output.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_fast_discret_output.label }}</div>
+                    {{ calc_control.calc_control_fast_discret_output }}
+                </div>
+                <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_analog_0_10V_input.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_analog_0_10V_input.label }}</div>
+                    {{ calc_control.calc_control_analog_0_10V_input }}
+                </div>
+                <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_analog_0_10V_output.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_analog_0_10V_output.label }}</div>
+                    {{ calc_control.calc_control_analog_0_10V_output }}
+                </div>
+                <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_analog_0_20mA_input.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_analog_0_20mA_input.label }}</div>
+                    {{ calc_control.calc_control_analog_0_20mA_input }}
+                </div>
+                <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_analog_0_20mA_output.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_analog_0_20mA_output.label }}</div>
+                    {{ calc_control.calc_control_analog_0_20mA_output }}
+                </div>
+                <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_analog_rtd_input.id_for_label }}">
+                    <div class="input-group-addon">{{ calc_control.calc_control_analog_rtd_input.label }}</div>
+                    {{ calc_control.calc_control_analog_rtd_input }}
+                </div>
+            {% endif %}
+            <div class="input-group calc_plc" id="div_{{ calc_control.calc_control_profinet.id_for_label }}">
+                <div class="input-group-addon">{{ calc_control.calc_control_profinet.label }}</div>
+                {{ calc_control.calc_control_profinet }}
+            </div>
+            <div class="input-group calc_plc" id="div_{{ calc_control.calc_control_profibus.id_for_label }}">
+                <div class="input-group-addon">{{ calc_control.calc_control_profibus.label }}</div>
+                {{ calc_control.calc_control_profibus }}
+            </div>
+            <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_modbus_tcp.id_for_label }}">
+                <div class="input-group-addon">{{ calc_control.calc_control_modbus_tcp.label }}</div>
+                {{ calc_control.calc_control_modbus_tcp }}
+            </div>
+            <div class="input-group calc_plc calc_programmable_relay" id="div_{{ calc_control.calc_control_modbus_rtu.id_for_label }}">
+                <div class="input-group-addon">{{ calc_control.calc_control_modbus_rtu.label }}</div>
+                {{ calc_control.calc_control_modbus_rtu }}
+            </div>
+        </div>
+        <hr>
+        <div class="form-group input-group calc_plc calc_programmable_relay">
+            <div class="input-group-addon">{{ instance.manufacture_relays }}</div>
+            {{ calc_control.calc_control_manufacturer_relays }}
+        </div>
+        <div class="form-group input-group calc_plc calc_programmable_relay">
+            <div class="input-group-addon">{{ instance.series_relays }}</div>
+            {{ calc_control.calc_control_series_relays }}
+        </div>
+        <hr>
+        <div class="form-group input-group">
+            <div class="input-group-addon">{{ instance.manufacture_terminal }}</div>
+            {{ calc_control.calc_control_manufacturer_terminals }}
+        </div>
+        <div class="form-group input-group">
+            <div class="input-group-addon">{{ instance.type_terminal }}</div>
+            {{ calc_control.calc_control_type_terminals }}
+        </div>
+    </div>
+    <hr>
+</div>
+
+{% addtoblock "js" %}<script type="text/javascript" src="{{ STATIC_URL }}jquery/jquery-2.2.4.js"></script>{% endaddtoblock %}
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(function(){
+    //Изменение отображения атрибутов при изменении выпадающего списка выбора типа пуска
+    $('#calc_control-{{ instance.id }} #id_calc_control_type, #calc_control-{{ instance.id }} #calc_control_more_button-{{ instance.id }}').on("click",function() {
+           var val = $('#calc_control-{{ instance.id }} #id_calc_control_type').val();
+           if (val == 'PLC' ) {
+               $('#calc_control-{{ instance.id }} .calc_programmable_relay').hide();
+               $('#calc_control-{{ instance.id }} .calc_plc').show();
+           }
+           if (val == 'ProgrammableRelay') {
+               $('#calc_control-{{ instance.id }} .calc_plc').hide();
+               $('#calc_control-{{ instance.id }} .calc_programmable_relay').show();
+           }
+           if (val == 'Relay') {
+               $('#calc_control-{{ instance.id }} .calc_plc').hide();
+               $('#calc_control-{{ instance.id }} .calc_programmable_relay').hide();
+           }
+           if (val == ''){
+               $('#calc_control-{{ instance.id }} .calc_plc').hide();
+               $('#calc_control-{{ instance.id }} .calc_programmable_relay').hide();
+           }
+        });
+     });
+
+
+$(document).ready(function () {
+
+    function CheckCalcControlFieldInCalculation(id) {
+        var data = {};
+
+        data.calc_control_voltage=$('#calc_control-{{ instance.id }} #id_calc_control_voltage').val();
+        data.calc_control_type=$('#calc_control-{{ instance.id }} #id_calc_control_type').val();
+
+        if (data.calc_control_voltage > 0  & data.calc_control_type != ''){
+
+            data.calc_control_manufacturer=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer').val();
+            data.calc_control_series=$('#calc_control-{{ instance.id }} #id_calc_control_series').val();
+
+            data.calc_control_discret_input=$('#calc_control-{{ instance.id }} #id_calc_control_discret_input').val();
+            data.calc_control_discret_output=$('#calc_control-{{ instance.id }} #id_calc_control_discret_output').val();
+            data.calc_control_fast_discret_input=$('#calc_control-{{ instance.id }} #id_calc_control_fast_discret_input').val();
+            data.calc_control_fast_discret_output=$('#calc_control-{{ instance.id }} #id_calc_control_fast_discret_output').val();
+            data.calc_control_analog_0_10V_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_10V_input').val();
+            data.calc_control_analog_0_10V_output=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_10V_output').val();
+            data.calc_control_analog_0_20mA_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_20mA_input').val();
+            data.calc_control_analog_0_20mA_output=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_20mA_output').val();
+            data.calc_control_analog_rtd_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_rtd_input').val();
+            data.calc_control_profinet=$('#calc_control-{{ instance.id }} #id_calc_control_profinet').val();
+            data.calc_control_profibus=$('#calc_control-{{ instance.id }} #id_calc_control_profibus').val();
+            data.calc_control_modbus_tcp=$('#calc_control-{{ instance.id }} #id_calc_control_modbus_tcp').val();
+            data.calc_control_modbus_rtu=$('#calc_control-{{ instance.id }} #id_calc_control_modbus_rtu').val();
+
+            data.calc_control_manufacturer_relays=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer_relays').val();
+            data.calc_control_series_relays=$('#calc_control-{{ instance.id }} #id_calc_control_series_relays').val();
+
+            data.calc_control_manufacturer_terminals=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer_terminals').val();
+            data.calc_control_type_terminals=$('#calc_control-{{ instance.id }} #id_calc_control_type_terminals').val();
+
+            var csrf_token = $('.calc_form [name="csrfmiddlewaretoken"]').val();
+            data["csrfmiddlewaretoken"] = csrf_token;
+
+            var url = "/check_calc_control_fields/";
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                cache: true,
+                success:function (receive) {
+                    console.log(receive);
+                    {# Функция обновления выпадающего списка по id согласно полученному receive_dict#}
+{#                    function Disabling_SelectField(receive_dict,get_val_from_id, id) {#}
+{#                        var selected ='';#}
+{#                        $(id).html('<option value="" selected="selected">-----</option>');#}
+{#                        $.each(receive_dict, function (k, v) {#}
+{#                            if (get_val_from_id == v){selected = 'selected="selected"';} else {selected = '';}#}
+{#                            $(id).append('<option value="'+ v +'"'+ selected +'>'+ v +'</option>');#}
+{#                        });#}
+{#                    }#}
+                    {# Функция доступности chebox field по id согласно полученному bool переменной#}
+{#                    function Disabling_IntegerField(if_variable, id) {#}
+{#                        if (if_variable){$( id ).prop( "disabled", false );}#}
+{#                            else{$( id ).prop( "disabled", true );$( id ).val( "" );#}
+{#                        }#}
+{#                    }#}
+{##}
+{#                    Disabling_SelectField(receive.manufacturers, data.calc_drive_manufacturer, '#calc_control-{{ instance.id }} #id_calc_drive_manufacturer');#}
+{#                    Disabling_SelectField(receive.series, data.calc_drive_series, '#calc_control-{{ instance.id }} #id_calc_drive_series');#}
+{##}
+{##}
+{#                    Disabling_IntegerField(receive.discret_input, '#calc_control-{{ instance.id }} #id_calc_drive_discret_input');#}
+{#                    Disabling_IntegerField(receive.discret_output, '#calc_control-{{ instance.id }} #id_calc_drive_discret_output');#}
+{#                    Disabling_IntegerField(receive.analog_input, '#calc_control-{{ instance.id }} #id_calc_drive_analog_input');#}
+{#                    Disabling_IntegerField(receive.analog_output, '#calc_control-{{ instance.id }} #id_calc_drive_analog_output');#}
+{#                    Disabling_IntegerField(receive.profinet, '#calc_control-{{ instance.id }} #id_calc_drive_profinet');#}
+{#                    Disabling_IntegerField(receive.profibus, '#calc_control-{{ instance.id }} #id_calc_drive_profibus');#}
+{#                    Disabling_IntegerField(receive.rs485, '#calc_control-{{ instance.id }} #id_calc_drive_rs485');#}
+{##}
+{#                    Disabling_SelectField(receive.terminal_manufacturers, data.calc_drive_manufacturer_terminals, '#calc_control-{{ instance.id }} #id_calc_drive_manufacturer_terminals');#}
+{##}
+{##}
+{#                    var id ='';#}
+{#                    id = $( '#calc_control-{{ instance.id }}' ).closest( "form" ).attr('id');#}
+{#                    if (receive.general_checking){#}
+{#                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", false );#}
+{#                    }else{#}
+{#                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", true );#}
+{#                    }#}
+                },
+                error: function () {
+                    console.log("ERROR ajax POST")
+
+                }
+            })
+        }
+    }
+
+CheckCalcControlFieldInCalculation(id='#calc_control-{{ instance.id }}');
+
+$(document).off('change','#calc_control-{{ instance.id }}').on('change','#calc_control-{{ instance.id }}', function() {
+    CheckCalcControlFieldInCalculation(id = '#calc_control-{{ instance.id }}');
+    });
+});
+</script>
+{% endaddtoblock %}
+
+{#TODO: Прописать проверку полей запроса на наличие в выборке изделий по базе данных#}
+{#TODO: Оптимизировать функцию запроса до минимального кода и присвоения всех иных переменных в вызов функции а не внутри ее#}

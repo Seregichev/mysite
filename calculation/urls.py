@@ -3,8 +3,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 from django.conf import settings
 from django.conf.urls import url, include
-from .views import check_fields_in_calculator
+from .views import check_calc_drive_fields, check_calc_control_fields
 
 urlpatterns = [
-    url(r'check_fields_in_calculator/', check_fields_in_calculator, name='check_fields_in_calculator'),
+    url(r'check_calc_drive_fields/', check_calc_drive_fields, name='check_calc_drive_fields'),
+    url(r'check_calc_control_fields/', check_calc_control_fields, name='check_calc_control_fields'),
 ]

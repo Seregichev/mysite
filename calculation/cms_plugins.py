@@ -5,12 +5,136 @@ from cms.plugin_pool import plugin_pool
 from cms.models import CMSPlugin
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import python_2_unicode_compatible
-from .forms import CalcForm, CalcDriveForm, CalcNmb
-from .formula import add_commute_drive_items_into_estimate
 from django.conf import settings
-from django.http import JsonResponse
 from database_item.models import Item, ItemCategory
 from decimal import Decimal
+from .forms import CalcForm, CalcDriveForm, CalcNmb, CalcControlForm
+from .formula import add_commute_drive_items_into_estimate
+
+# Плагин настройки отображения плагина визализации подбора системы управления
+@python_2_unicode_compatible
+class CalcControlPluginSetting(CMSPlugin):
+
+    type = models.CharField(_(u'Название поля типа управления'), max_length=64, null=True, blank=True,
+                            default=_(u'Тип управления'))
+    voltage = models.CharField(_(u'Название поля выбора напряжения'), max_length=64, null=True, blank=True,
+                               default=_(u'Напряжение'))
+    voltage_unit = models.CharField(_(u'Единица измерения напряжения'), max_length=64, null=True, blank=True,
+                            default=_(u'[ В ]'))
+    show_input_output = models.BooleanField(default=True, verbose_name=u"Показывать input поля входов/выходов")
+
+    discret_input = models.CharField(_(u'Название поля дискретных входов'), max_length=64, null=True, blank=True,
+                               default=_(u'Дискретные входы'))
+    discret_output = models.CharField(_(u'Название поля дискретных выходов'), max_length=64, null=True, blank=True,
+                               default=_(u'Дискретные выходы'))
+    more = models.CharField(_(u'Название ссылки доп параметров'), max_length=64, null=True, blank=True,
+                            default=_(u'Дополнительно'))
+    manufacture_item = models.CharField(_(u'Приставка поля производителя комплектующих'), max_length=64, null=True,
+                                        blank=True, default=_(u'Производитель'))
+    series_item = models.CharField(_(u'Приставка серии комплектующих'), max_length=64, null=True,
+                                        blank=True, default=_(u'Серия'))
+    manufacture_relays = models.CharField(_(u'Приставка поля производителя промежуточных реле'), max_length=64, null=True, blank=True,
+                                            default=_(u'Производитель промежуточных реле'))
+    series_relays = models.CharField(_(u'Приставка поля серии промежуточных реле'), max_length=64, null=True, blank=True,
+                                     default=_(u'Серия промежуточных реле'))
+    manufacture_terminal = models.CharField(_(u'Приставка производителя клемм'), max_length=64, null=True, blank=True,
+                                        default=_(u'Производитель клемм'))
+    type_terminal = models.CharField(_(u'Приставка типа клемм'), max_length=64, null=True, blank=True,
+                                            default=_(u'Тип клемм'))
+
+
+    tag_class = models.CharField(_(u'HTML класс'), max_length=256, null=True, blank=True,)
+    tag_style = models.CharField(_(u'HTML стиль'), max_length=256, null=True, blank=True)
+
+
+# Плагин визализации подбора системы управления
+@plugin_pool.register_plugin
+class CalcControlPlugin(CMSPluginBase):
+
+    module = _(u"Калькуляторы")
+    name = _(u"Подбор системы управления")
+    model = CalcControlPluginSetting
+    render_template = "plugins/calc/calc_control.html"
+    require_parent = True
+    allow_children = True
+
+    def render(self, context, instance, placeholder):
+        form = CalcControlForm(context['request'].POST or None)
+        context['calc_control'] = form
+
+        context = super(CalcControlPlugin, self).render(context, instance, placeholder)
+
+        request = context['request']
+
+        if request.method == 'POST':
+
+            if request.POST.get('calc_control', None):
+                voltage = request.POST.get('calc_control_voltage', None)
+                type = request.POST.get('calc_control_type', None)
+                manufacturer = request.POST.get('calc_control_manufacturer', None)
+
+                itemqueryset = Item.objects.filter(voltage__gte=voltage, is_active=True)
+
+                if type == "PLC":
+                    itemqueryset = itemqueryset.filter(category__in=ItemCategory.objects.get(name=u'ПЛК') \
+                                                        .get_descendants(include_self=True))
+
+                if type == "ProgrammableRelay":
+                    itemqueryset = itemqueryset.filter(category__in=ItemCategory.objects.get(name=u'Программируемое реле') \
+                                                       .get_descendants(include_self=True))
+
+                if type == "Relay":
+                    itemqueryset = itemqueryset.filter(category__in=ItemCategory.objects.get(name=u'Промежуточное реле') \
+                                                        .get_descendants(include_self=True))
+
+
+                if manufacturer:
+                    itemqueryset = itemqueryset.filter(manufacturer__name=manufacturer, is_active=True)
+
+
+                if not itemqueryset.filter(variables__contains=['discret_input']).exists():
+                    context['calc_control'].fields['calc_control_discret_input'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['discret_output']).exists():
+                    context['calc_control'].fields['calc_control_discret_output'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['fast_input']).exists():
+                    context['calc_control'].fields['calc_control_fast_discret_input'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['fast_output']).exists():
+                    context['calc_control'].fields['calc_control_fast_discret_output'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['analog_0_10V_input']).exists():
+                    context['calc_control'].fields['calc_control_analog_0_10V_input'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['analog_0_10V_output']).exists():
+                    context['calc_control'].fields['calc_control_analog_0_10V_output'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['analog_0_20mA_input']).exists():
+                    context['calc_control'].fields['calc_control_analog_0_20mA_input'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['analog_0_20mA_output']).exists():
+                    context['calc_control'].fields['calc_control_analog_0_20mA_output'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['analog_rtd_input']).exists():
+                    context['calc_control'].fields['calc_control_analog_rtd_input'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['profinet']).exists():
+                    context['calc_control'].fields['calc_control_profinet'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['profibus']).exists():
+                    context['calc_control'].fields['calc_control_profibus'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['profibus']).exists():
+                    context['calc_control'].fields['calc_control_profibus'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['modbus_tcp']).exists():
+                    context['calc_control'].fields['calc_control_modbus_tcp'].disabled = True
+
+                if not itemqueryset.filter(variables__contains=['modbus_rtu']).exists():
+                    context['calc_control'].fields['calc_control_modbus_rtu'].disabled = True
+
+        return context
 
 
 # Плагин настройки отображения плагина визализации силовой коммутации привода
@@ -39,6 +163,7 @@ class CalcDrivePluginSetting(CMSPlugin):
                                         default=_(u'Производитель клемм'))
     type_terminal = models.CharField(_(u'Приставка типа клемм'), max_length=64, null=True, blank=True,
                                             default=_(u'Тип клемм'))
+    show_input_output = models.BooleanField(default=True, verbose_name=u"Показывать input поля входов/выходов")
 
     tag_class = models.CharField(_(u'HTML класс'), max_length=256, null=True, blank=True,)
     tag_style = models.CharField(_(u'HTML стиль'), max_length=256, null=True, blank=True)
@@ -65,44 +190,44 @@ class CalcDrivePlugin(CMSPluginBase):
         # Проверка форм на наличие атрибутов в изделиях
 
         if request.method == 'POST':
-            data = request.POST
 
-            voltage = data['calc_drive_voltage'] or None
-            power = data['calc_drive_power'] or None
-            manufacturer = data['calc_drive_manufacturer'] or None
+            if request.POST.get('calc_drive', None):
+                voltage = request.POST.get('calc_drive_voltage', None)
+                power = request.POST.get('calc_drive_power', None)
+                manufacturer = request.POST.get('calc_drive_manufacturer', None)
 
-            current = ((Decimal(power) * Decimal(1000)) / (Decimal(voltage) * Decimal(settings.COSINE_PHI)))
+                current = ((Decimal(power) * Decimal(1000)) / (Decimal(voltage) * Decimal(settings.COSINE_PHI)))
 
-            if manufacturer:
-                itemqueryset = Item.objects.filter(category__in=ItemCategory.objects.get(name=u'Силовая коммутация') \
-                                                   .get_descendants(include_self=True),
-                                                   current__gte=current, voltage__gte=voltage,
-                                                   manufacturer__name=manufacturer, is_active=True)
-            else:
-                itemqueryset = Item.objects.filter(category__in=ItemCategory.objects.get(name=u'Силовая коммутация')\
-                                                                 .get_descendants(include_self=True),
-                                                   current__gte=current, voltage__gte=voltage, is_active=True)
+                if manufacturer:
+                    itemqueryset = Item.objects.filter(category__in=ItemCategory.objects.get(name=u'Силовая коммутация')\
+                                                       .get_descendants(include_self=True),
+                                                       current__gte=current, voltage__gte=voltage,
+                                                       manufacturer__name=manufacturer, is_active=True)
+                else:
+                    itemqueryset = Item.objects.filter(category__in=ItemCategory.objects.get(name=u'Силовая коммутация')\
+                                                                     .get_descendants(include_self=True),
+                                                       current__gte=current, voltage__gte=voltage, is_active=True)
 
-            if not itemqueryset.filter(variables__contains=['discret_input']).exists():
-                context['commute_drive'].fields['calc_drive_discret_input'].disabled = True
+                if not itemqueryset.filter(variables__contains=['discret_input']).exists():
+                    context['commute_drive'].fields['calc_drive_discret_input'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['discret_output']).exists():
-                context['commute_drive'].fields['calc_drive_discret_output'].disabled = True
+                if not itemqueryset.filter(variables__contains=['discret_output']).exists():
+                    context['commute_drive'].fields['calc_drive_discret_output'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['analog_input']).exists():
-                context['commute_drive'].fields['calc_drive_analog_input'].disabled = True
+                if not itemqueryset.filter(variables__contains=['analog_input']).exists():
+                    context['commute_drive'].fields['calc_drive_analog_input'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['analog_output']).exists():
-                context['commute_drive'].fields['calc_drive_analog_output'].disabled = True
+                if not itemqueryset.filter(variables__contains=['analog_output']).exists():
+                    context['commute_drive'].fields['calc_drive_analog_output'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['profinet']).exists():
-                context['commute_drive'].fields['calc_drive_profinet'].disabled = True
+                if not itemqueryset.filter(variables__contains=['profinet']).exists():
+                    context['commute_drive'].fields['calc_drive_profinet'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['profibus']).exists():
-                context['commute_drive'].fields['calc_drive_profibus'].disabled = True
+                if not itemqueryset.filter(variables__contains=['profibus']).exists():
+                    context['commute_drive'].fields['calc_drive_profibus'].disabled = True
 
-            if not itemqueryset.filter(variables__contains=['rs485']).exists():
-                context['commute_drive'].fields['calc_drive_rs485'].disabled = True
+                if not itemqueryset.filter(variables__contains=['rs485']).exists():
+                    context['commute_drive'].fields['calc_drive_rs485'].disabled = True
 
         return context
 
@@ -186,13 +311,16 @@ class CalcFormPlugin(CMSPluginBase):
         request = context['request']
 
         if request.method == 'POST':
-            data = request.POST
 
             if settings.DEBUG:
-                print(data)
+                print(request.POST)
 
-            if data["calc_drive"] == '1':
+            if request.POST.get('calc_drive', None):
                 add_commute_drive_items_into_estimate(request=request)
+
+            if request.POST.get('calc_control', None):
+                print('Yes, the request from calc_control plugin is arrived')
+                # TODO: Написать функцию подбора изделий управления (лучше конечно в отдельном файле, но плодить код не хотелось бы)
 
             if not request.POST._mutable:
                 request.POST._mutable = True

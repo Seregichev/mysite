@@ -33,41 +33,43 @@
         </div>
         <hr>
         <div class="form-group" id="commute_drive_attribute">
-            <div class="checkbox" id="div_{{ commute_drive.calc_drive_reverse.id_for_label }}">
+            <div class="checkbox calc_streight calc_softstart" id="div_{{ commute_drive.calc_drive_reverse.id_for_label }}">
                 <label>
                 {{ commute_drive.calc_drive_reverse }}{{ commute_drive.calc_drive_reverse.label }}
                 </label>
             </div>
-            <div class="checkbox" id="div_{{ commute_drive.calc_drive_bypass.id_for_label }}">
+            <div class="checkbox calc_softstart calc_freqconvert" id="div_{{ commute_drive.calc_drive_bypass.id_for_label }}">
                 <label>
                 {{ commute_drive.calc_drive_bypass }}{{ commute_drive.calc_drive_bypass.label }}
                 </label>
             </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_discret_input.id_for_label }}">
-                <div class="input-group-addon">{{ commute_drive.calc_drive_discret_input.label }}</div>
-                {{ commute_drive.calc_drive_discret_input }}
-            </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_discret_output.id_for_label }}">
-                <div class="input-group-addon">{{ commute_drive.calc_drive_discret_output.label }}</div>
-                {{ commute_drive.calc_drive_discret_output }}
-            </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_analog_input.id_for_label }}">
-                <div class="input-group-addon">{{ commute_drive.calc_drive_analog_input.label }}</div>
-                {{ commute_drive.calc_drive_analog_input }}
-            </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_analog_output.id_for_label }}">
-                <div class="input-group-addon">{{ commute_drive.calc_drive_analog_output.label }}</div>
-                {{ commute_drive.calc_drive_analog_output }}
-            </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_profinet.id_for_label }}">
+            {% if instance.show_input_output %}
+                <div class="input-group calc_softstart calc_freqconvert" id="div_{{ commute_drive.calc_drive_discret_input.id_for_label }}">
+                    <div class="input-group-addon">{{ commute_drive.calc_drive_discret_input.label }}</div>
+                    {{ commute_drive.calc_drive_discret_input }}
+                </div>
+                <div class="input-group calc_softstart calc_freqconvert" id="div_{{ commute_drive.calc_drive_discret_output.id_for_label }}">
+                    <div class="input-group-addon">{{ commute_drive.calc_drive_discret_output.label }}</div>
+                    {{ commute_drive.calc_drive_discret_output }}
+                </div>
+                <div class="input-group calc_freqconvert" id="div_{{ commute_drive.calc_drive_analog_input.id_for_label }}">
+                    <div class="input-group-addon">{{ commute_drive.calc_drive_analog_input.label }}</div>
+                    {{ commute_drive.calc_drive_analog_input }}
+                </div>
+                <div class="input-group calc_freqconvert" id="div_{{ commute_drive.calc_drive_analog_output.id_for_label }}">
+                    <div class="input-group-addon">{{ commute_drive.calc_drive_analog_output.label }}</div>
+                    {{ commute_drive.calc_drive_analog_output }}
+                </div>
+            {% endif %}
+            <div class="input-group calc_freqconvert" id="div_{{ commute_drive.calc_drive_profinet.id_for_label }}">
                 <div class="input-group-addon">{{ commute_drive.calc_drive_profinet.label }}</div>
                 {{ commute_drive.calc_drive_profinet }}
             </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_profibus.id_for_label }}">
+            <div class="input-group calc_softstart calc_freqconvert" id="div_{{ commute_drive.calc_drive_profibus.id_for_label }}">
                 <div class="input-group-addon">{{ commute_drive.calc_drive_profibus.label }}</div>
                 {{ commute_drive.calc_drive_profibus }}
             </div>
-            <div class="input-group" id="div_{{ commute_drive.calc_drive_rs485.id_for_label }}">
+            <div class="input-group calc_freqconvert" id="div_{{ commute_drive.calc_drive_rs485.id_for_label }}">
                 <div class="input-group-addon">{{ commute_drive.calc_drive_rs485.label }}</div>
                 {{ commute_drive.calc_drive_rs485 }}
             </div>
@@ -93,23 +95,24 @@ $(function(){
     $('#calc_drive-{{ instance.id }} #id_calc_drive_type, #calc_drive-{{ instance.id }} #calc_drive_more_button-{{ instance.id }}').on("click",function() {
            var val = $('#calc_drive-{{ instance.id }} #id_calc_drive_type').val();
            if (val == 'Streight' ) {
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_reverse').show();
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').hide();
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').prop('checked', false);
+               $('#calc_drive-{{ instance.id }} .calc_softstart').hide();
+               $('#calc_drive-{{ instance.id }} .calc_freqconvert').hide();
+               $('#calc_drive-{{ instance.id }} .calc_streight').show();
            }
            if (val == 'SoftStart') {
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus').show();
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').hide();
-               $('#calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analogg_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analogg_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').prop('checked', false);
+               $('#calc_drive-{{ instance.id }} .calc_streight').hide();
+               $('#calc_drive-{{ instance.id }} .calc_freqconvert').hide();
+               $('#calc_drive-{{ instance.id }} .calc_softstart').show();
            }
            if (val == 'FreqConvert') {
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_reverse').hide();
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').show();
-               $('#calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analogg_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').prop('checked', false);
+               $('#calc_drive-{{ instance.id }} .calc_streight').hide();
+               $('#calc_drive-{{ instance.id }} .calc_softstart').hide();
+               $('#calc_drive-{{ instance.id }} .calc_freqconvert').show();
            }
            if (val == ''){
-               $('#calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_input, #calc_drive-{{ instance.id }} #div_id_calc_drive_analog_output, #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').hide();
-               $('#calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_reverse, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_bypass, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_discret_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analogg_input, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_analogg_output, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profinet, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_profibus, #calc_drive-{{ instance.id }} #calc_drive-{{ instance.id }} #div_id_calc_drive_rs485').prop('checked', false);
+               $('#calc_drive-{{ instance.id }} .calc_streight').hide();
+               $('#calc_drive-{{ instance.id }} .calc_softstart').hide();
+               $('#calc_drive-{{ instance.id }} .calc_freqconvert').hide();
            }
         });
      });
@@ -117,7 +120,7 @@ $(function(){
 
 $(document).ready(function () {
 
-    function CheckFieldInCalculation(destanation, id) {
+    function CheckCalcDriveFieldInCalculation(id) {
         var data = {};
 
         data.calc_drive_voltage=$('#calc_drive-{{ instance.id }} #id_calc_drive_voltage').val();
@@ -143,7 +146,7 @@ $(document).ready(function () {
             var csrf_token = $('.calc_form [name="csrfmiddlewaretoken"]').val();
             data["csrfmiddlewaretoken"] = csrf_token;
 
-            var url = "/check_fields_in_calculator/";
+            var url = "/check_calc_drive_fields/";
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -198,10 +201,10 @@ $(document).ready(function () {
         }
     }
 
-CheckFieldInCalculation(destanation='calc_drive', id='#calc_drive-{{ instance.id }}');
+CheckCalcDriveFieldInCalculation(id='#calc_drive-{{ instance.id }}');
 
 $(document).off('change','#calc_drive-{{ instance.id }}').on('change','#calc_drive-{{ instance.id }}', function() {
-    CheckFieldInCalculation(destanation='calc_drive', id='#calc_drive-{{ instance.id }}');
+    CheckCalcDriveFieldInCalculation(id='#calc_drive-{{ instance.id }}');
 });
 
 });

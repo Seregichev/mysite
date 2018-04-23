@@ -219,6 +219,7 @@ def check_calc_control_fields(request):
         choise_type = data["calc_control_type"] or None
         choise_manufacturer = data.get('calc_control_manufacturer') or None
         choise_series = data.get('calc_control_series') or None
+        choise_cpu = data.get('calc_control_cpu') or None
         choise_relays_manufacturer = data.get('calc_control_manufacturer_relays') or None
         choise_relays_series = data.get('calc_control_series_relays') or None
         choise_terminal_manufacturer = data.get('calc_drive_manufacturer_terminals') or None
@@ -228,16 +229,124 @@ def check_calc_control_fields(request):
         choise_discret_output = data.get('calc_control_discret_output') or None
         choise_fast_discret_input = data.get('calc_control_fast_discret_input') or None
         choise_fast_discret_output = data.get('calc_control_fast_discret_output') or None
-        calc_control_analog_0_10V_input = data.get('calc_control_analog_0_10V_input') or None
-        calc_control_analog_0_10V_output = data.get('calc_control_analog_0_10V_output') or None
-        calc_control_analog_0_20mA_input = data.get('calc_control_analog_0_20mA_input') or None
-        calc_control_analog_0_20mA_output = data.get('calc_control_analog_0_20mA_output') or None
-        calc_control_analog_rtd_input = data.get('calc_control_analog_rtd_inpu') or None
-        calc_control_profinet = data.get('calc_control_profinet') or None
-        calc_control_profibus = data.get('calc_control_profibus') or None
-        calc_control_modbus_tcp = data.get('calc_control_modbus_tcp') or None
-        calc_control_modbus_rtu = data.get('calc_control_modbus_rtu') or None
+        choise_analog_0_10V_input = data.get('calc_control_analog_0_10V_input') or None
+        choise_analog_0_10V_output = data.get('calc_control_analog_0_10V_output') or None
+        choise_analog_0_20mA_input = data.get('calc_control_analog_0_20mA_input') or None
+        choise_analog_0_20mA_output = data.get('calc_control_analog_0_20mA_output') or None
+        choise_analog_rtd_input = data.get('calc_control_analog_rtd_inpu') or None
+        choise_profinet = data.get('calc_control_profinet') or None
+        choise_profibus = data.get('calc_control_profibus') or None
+        choise_modbus_tcp = data.get('calc_control_modbus_tcp') or None
+        choise_modbus_rtu = data.get('calc_control_modbus_rtu') or None
 
         print(data)
 
+        category = None
+
+        items = Item.objects.filter(is_active=True)
+
+        if choise_voltage:
+            items = items.filter(voltage=choise_voltage)
+
+        terminal_manufacturers = items.filter(category__in=ItemCategory.objects.get(name=u'Клеммы') \
+                                              .get_descendants(include_self=True)) \
+                                                .values_list('manufacturer__name', flat=True) \
+                                                .distinct()
+
+        if choise_type == 'Relay':
+            category = ItemCategory.objects.filter(name__startswith=u'Реле').first()
+
+        if choise_type == 'ProgrammableRelay':
+            category = ItemCategory.objects.filter(name__startswith=u'Программируемое реле').first()
+
+        if choise_type == 'PLC':
+            category = ItemCategory.objects.filter(name__startswith=u'ПЛК').first()
+
+        if category:
+            items = items.filter(category__in=ItemCategory.objects.get(id=category.id).get_descendants(include_self=True))
+
+        main_items = items.filter(variables__contains='main_item')
+
+        manufacturers = main_items.values_list('manufacturer__name').distinct()
+
+        if choise_manufacturer:
+            main_items = main_items.filter(manufacturer__name=choise_manufacturer)
+
+        series = main_items.values_list('series').distinct()
+
+        if choise_series:
+            main_items = main_items.filter(series=choise_series)
+
+        cpu = main_items.values_list('name').distinct()
+
+        if choise_cpu:
+            main_items = main_items.filter(series=choise_series)
+
+        adding_items = items
+
+        if main_items:
+            adding_items = adding_items.filter(compatibility_code=main_items.first().compatibility_code)
+
+        discret_input = adding_items.filter(variables__contains='discret_input').exists()
+
+        discret_output = adding_items.filter(variables__contains='discret_output').exists()
+
+        fast_discret_input = adding_items.filter(variables__contains='fast_discret_input').exists()
+
+        fast_discret_output = adding_items.filter(variables__contains='fast_discret_output').exists()
+
+        analog_0_10V_input = adding_items.filter(variables__contains='analog_0_10V_input').exists()
+
+        analog_0_10V_output = adding_items.filter(variables__contains='analog_0_10V_output').exists()
+
+        analog_0_20mA_input = adding_items.filter(variables__contains='analog_0_20mA_input').exists()
+
+        analog_0_20mA_output = adding_items.filter(variables__contains='analog_0_20mA_output').exists()
+
+        analog_rtd_input = adding_items.filter(variables__contains='analog_rtd_input').exists()
+
+        profinet = adding_items.filter(variables__contains='profinet').exists()
+
+        profibus = adding_items.filter(variables__contains='profibus').exists()
+
+        modbus_tcp = adding_items.filter(variables__contains='modbus_tcp').exists()
+
+        modbus_rtu = adding_items.filter(variables__contains='modbus_rtu').exists()
+
+        # выдача возвращаемого словаря
+        return_dict["manufacturers"] = list()
+        for manufacturer in manufacturers:
+            return_dict['manufacturers'].append(manufacturer)
+
+        return_dict["series"] = list()
+        for one in series:
+            return_dict['series'].append(one)
+
+        return_dict["cpu"] = list()
+        for one in cpu:
+            return_dict['cpu'].append(one)
+
+        return_dict['discret_input'] = discret_input
+        return_dict['discret_output'] = discret_output
+        return_dict['fast_discret_input'] = fast_discret_input
+        return_dict['fast_discret_output'] = fast_discret_output
+        return_dict['analog_0_10V_input'] = analog_0_10V_input
+        return_dict['analog_0_10V_output'] = analog_0_10V_output
+        return_dict['analog_0_20mA_input'] = analog_0_20mA_input
+        return_dict['analog_0_20mA_output'] = analog_0_20mA_output
+        return_dict['analog_rtd_input'] = analog_rtd_input
+        return_dict['profinet'] = profinet
+        return_dict['profibus'] = profibus
+        return_dict['modbus_tcp'] = modbus_tcp
+        return_dict['modbus_rtu'] = modbus_rtu
+
+        return_dict["terminal_manufacturers"] = list()
+        for terminal_manufacturer in terminal_manufacturers:
+            return_dict['terminal_manufacturers'].append(terminal_manufacturer)
+
+        if main_items:
+            return_dict['general_checking'] = True
+
     return JsonResponse(return_dict)
+
+# TODO: Добавить обработку выпадающих списков промежуточных реле

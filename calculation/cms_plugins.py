@@ -30,10 +30,12 @@ class CalcControlPluginSetting(CMSPlugin):
                                default=_(u'Дискретные выходы'))
     more = models.CharField(_(u'Название ссылки доп параметров'), max_length=64, null=True, blank=True,
                             default=_(u'Дополнительно'))
-    manufacture_item = models.CharField(_(u'Приставка поля производителя комплектующих'), max_length=64, null=True,
+    manufacture_item = models.CharField(_(u'Приставка поля производителя управления'), max_length=64, null=True,
                                         blank=True, default=_(u'Производитель'))
-    series_item = models.CharField(_(u'Приставка серии комплектующих'), max_length=64, null=True,
+    series_item = models.CharField(_(u'Приставка серии управления'), max_length=64, null=True,
                                         blank=True, default=_(u'Серия'))
+    cpu_item = models.CharField(_(u'Приставка процессора управления'), max_length=64, null=True,
+                                   blank=True, default=_(u'Процессор'))
     manufacture_relays = models.CharField(_(u'Приставка поля производителя промежуточных реле'), max_length=64, null=True, blank=True,
                                             default=_(u'Производитель промежуточных реле'))
     series_relays = models.CharField(_(u'Приставка поля серии промежуточных реле'), max_length=64, null=True, blank=True,
@@ -42,7 +44,10 @@ class CalcControlPluginSetting(CMSPlugin):
                                         default=_(u'Производитель клемм'))
     type_terminal = models.CharField(_(u'Приставка типа клемм'), max_length=64, null=True, blank=True,
                                             default=_(u'Тип клемм'))
+    show_reserve = models.BooleanField(default=True, verbose_name=u"Показывать процент запаса")
 
+    reserve = models.CharField(_(u'Приставка процента запаса входов/выходов'), max_length=64, null=True, blank=True,
+                                     default=_(u'Процент запаса'))
 
     tag_class = models.CharField(_(u'HTML класс'), max_length=256, null=True, blank=True,)
     tag_style = models.CharField(_(u'HTML стиль'), max_length=256, null=True, blank=True)
@@ -375,7 +380,6 @@ class CalcFormPlugin(CMSPluginBase):
                         # переносим вторую выборку в третью
                         third_items = second_items
 
-                        # TODO: проверить работу or not third_items.exists() и при не нужности перенести для норм работы
                         # исключаем из выборки если кол-во запрашиваемых параметров подобрано или черезмерно подобрано
                         if one_var_value <= 0:
                             third_items = third_items.exclude(variables__contains=one_var_name)
@@ -528,4 +532,4 @@ class CalcFormPlugin(CMSPluginBase):
         context = super(CalcFormPlugin, self).render(context, instance, placeholder)
         return context
 
-# TODO: Перенести функцию добавления модулей управления в отдельный файл
+# TODO: Перенести функцию добавления модулей управления в отдельный файл формула и добавить подбор cpu если его нет в запросе

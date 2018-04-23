@@ -134,6 +134,11 @@ class CalcControlForm (forms.Form):
         ('PushIn', u'Push-In'),
     )
 
+    CHOISES_RESERVE = (
+        ('1', '0 %'), ('1.1', '10 %'), ('1.2', '20 %'), ('1.3', '30 %'), ('1.4', '40 %'), ('1.5', '50 %'),
+        ('1.6', '60 %'), ('1.7', '70 %'), ('1.8', '80 %'), ('1.9', '90 %'), ('2', '100 %')
+    )
+
     calc_control = forms.IntegerField(widget=forms.HiddenInput(), initial='1')
 
     calc_control_voltage = forms.ChoiceField(choices=CHOISES_VOLTAGE,
@@ -168,6 +173,15 @@ class CalcControlForm (forms.Form):
                                                required=False,
                                                widget=forms.Select(attrs={'class': 'form-control'})
                                                )
+
+    calc_control_cpu = forms.ModelChoiceField(queryset=Item.objects \
+                                                 .filter(category__in=ItemCategory.objects.get(name=u'Управление')
+                                                         .get_descendants(include_self=True),
+                                                         variables__contains=['cpu'] ) \
+                                                 .values_list('name', flat=True).distinct(),
+                                                 required=False,
+                                                 widget=forms.Select(attrs={'class': 'form-control'})
+                                                 )
 
     calc_control_fast_discret_input = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
                                                                                     'pattern': '^[ 0-9]+$'}),
@@ -253,3 +267,7 @@ class CalcControlForm (forms.Form):
                                                   widget=forms.Select(attrs={'class': 'form-control'}),
                                                   required=False,
                                                   )
+
+    calc_control_reserve = forms.ChoiceField(choices=CHOISES_RESERVE,
+                                          widget=forms.Select(attrs={'class': 'form-control'}),
+                                             initial=1.2)

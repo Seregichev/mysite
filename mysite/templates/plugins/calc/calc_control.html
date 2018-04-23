@@ -36,6 +36,10 @@
             <div class="input-group-addon">{{ instance.series_item }}</div>
             {{ calc_control.calc_control_series }}
         </div>
+        <div class="form-group input-group calc_plc calc_programmable_relay">
+            <div class="input-group-addon">{{ instance.cpu_item }}</div>
+            {{ calc_control.calc_control_cpu }}
+        </div>
         <hr>
         <div class="form-group" id="calc_control_attribute">
             {% if instance.show_input_output %}
@@ -103,6 +107,12 @@
             <div class="input-group-addon">{{ instance.type_terminal }}</div>
             {{ calc_control.calc_control_type_terminals }}
         </div>
+        {% if instance.show_reserve %}
+        <div class="form-group input-group">
+            <div class="input-group-addon">{{ instance.reserve }}</div>
+            {{ calc_control.calc_control_reserve }}
+        </div>
+        {% endif %}
     </div>
     <hr>
 </div>
@@ -139,33 +149,34 @@ $(document).ready(function () {
     function CheckCalcControlFieldInCalculation(id) {
         var data = {};
 
-        data.calc_control_voltage=$('#calc_control-{{ instance.id }} #id_calc_control_voltage').val();
-        data.calc_control_type=$('#calc_control-{{ instance.id }} #id_calc_control_type').val();
+        data.calc_control_voltage=$(id + ' #id_calc_control_voltage').val();
+        data.calc_control_type=$(id + ' #id_calc_control_type').val();
 
         if (data.calc_control_voltage > 0  & data.calc_control_type != ''){
 
-            data.calc_control_manufacturer=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer').val();
-            data.calc_control_series=$('#calc_control-{{ instance.id }} #id_calc_control_series').val();
+            data.calc_control_manufacturer=$(id + ' #id_calc_control_manufacturer').val();
+            data.calc_control_series=$(id + ' #id_calc_control_series').val();
+            data.calc_control_cpu=$(id + ' #id_calc_control_cpu').val();
 
-            data.calc_control_discret_input=$('#calc_control-{{ instance.id }} #id_calc_control_discret_input').val();
-            data.calc_control_discret_output=$('#calc_control-{{ instance.id }} #id_calc_control_discret_output').val();
-            data.calc_control_fast_discret_input=$('#calc_control-{{ instance.id }} #id_calc_control_fast_discret_input').val();
-            data.calc_control_fast_discret_output=$('#calc_control-{{ instance.id }} #id_calc_control_fast_discret_output').val();
-            data.calc_control_analog_0_10V_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_10V_input').val();
-            data.calc_control_analog_0_10V_output=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_10V_output').val();
-            data.calc_control_analog_0_20mA_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_20mA_input').val();
-            data.calc_control_analog_0_20mA_output=$('#calc_control-{{ instance.id }} #id_calc_control_analog_0_20mA_output').val();
-            data.calc_control_analog_rtd_input=$('#calc_control-{{ instance.id }} #id_calc_control_analog_rtd_input').val();
-            data.calc_control_profinet=$('#calc_control-{{ instance.id }} #id_calc_control_profinet').val();
-            data.calc_control_profibus=$('#calc_control-{{ instance.id }} #id_calc_control_profibus').val();
-            data.calc_control_modbus_tcp=$('#calc_control-{{ instance.id }} #id_calc_control_modbus_tcp').val();
-            data.calc_control_modbus_rtu=$('#calc_control-{{ instance.id }} #id_calc_control_modbus_rtu').val();
+            data.calc_control_discret_input=$(id + ' #id_calc_control_discret_input').val();
+            data.calc_control_discret_output=$(id + ' #id_calc_control_discret_output').val();
+            data.calc_control_fast_discret_input=$(id + ' #id_calc_control_fast_discret_input').val();
+            data.calc_control_fast_discret_output=$(id + ' #id_calc_control_fast_discret_output').val();
+            data.calc_control_analog_0_10V_input=$(id + ' #id_calc_control_analog_0_10V_input').val();
+            data.calc_control_analog_0_10V_output=$(id + ' #id_calc_control_analog_0_10V_output').val();
+            data.calc_control_analog_0_20mA_input=$(id + ' #id_calc_control_analog_0_20mA_input').val();
+            data.calc_control_analog_0_20mA_output=$(id + ' #id_calc_control_analog_0_20mA_output').val();
+            data.calc_control_analog_rtd_input=$(id + ' #id_calc_control_analog_rtd_input').val();
+            data.calc_control_profinet=$(id + ' #id_calc_control_profinet').val();
+            data.calc_control_profibus=$(id + ' #id_calc_control_profibus').val();
+            data.calc_control_modbus_tcp=$(id + ' #id_calc_control_modbus_tcp').val();
+            data.calc_control_modbus_rtu=$(id + ' #id_calc_control_modbus_rtu').val();
 
-            data.calc_control_manufacturer_relays=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer_relays').val();
-            data.calc_control_series_relays=$('#calc_control-{{ instance.id }} #id_calc_control_series_relays').val();
+            data.calc_control_manufacturer_relays=$(id + ' #id_calc_control_manufacturer_relays').val();
+            data.calc_control_series_relays=$(id + ' #id_calc_control_series_relays').val();
 
-            data.calc_control_manufacturer_terminals=$('#calc_control-{{ instance.id }} #id_calc_control_manufacturer_terminals').val();
-            data.calc_control_type_terminals=$('#calc_control-{{ instance.id }} #id_calc_control_type_terminals').val();
+            data.calc_control_manufacturer_terminals=$(id + ' #id_calc_control_manufacturer_terminals').val();
+            data.calc_control_type_terminals=$(id + ' #id_calc_control_type_terminals').val();
 
             var csrf_token = $('.calc_form [name="csrfmiddlewaretoken"]').val();
             data["csrfmiddlewaretoken"] = csrf_token;
@@ -178,44 +189,50 @@ $(document).ready(function () {
                 cache: true,
                 success:function (receive) {
                     console.log(receive);
-                    {# Функция обновления выпадающего списка по id согласно полученному receive_dict#}
-{#                    function Disabling_SelectField(receive_dict,get_val_from_id, id) {#}
-{#                        var selected ='';#}
-{#                        $(id).html('<option value="" selected="selected">-----</option>');#}
-{#                        $.each(receive_dict, function (k, v) {#}
-{#                            if (get_val_from_id == v){selected = 'selected="selected"';} else {selected = '';}#}
-{#                            $(id).append('<option value="'+ v +'"'+ selected +'>'+ v +'</option>');#}
-{#                        });#}
-{#                    }#}
-                    {# Функция доступности chebox field по id согласно полученному bool переменной#}
-{#                    function Disabling_IntegerField(if_variable, id) {#}
-{#                        if (if_variable){$( id ).prop( "disabled", false );}#}
-{#                            else{$( id ).prop( "disabled", true );$( id ).val( "" );#}
-{#                        }#}
-{#                    }#}
-{##}
-{#                    Disabling_SelectField(receive.manufacturers, data.calc_drive_manufacturer, '#calc_control-{{ instance.id }} #id_calc_drive_manufacturer');#}
-{#                    Disabling_SelectField(receive.series, data.calc_drive_series, '#calc_control-{{ instance.id }} #id_calc_drive_series');#}
-{##}
-{##}
-{#                    Disabling_IntegerField(receive.discret_input, '#calc_control-{{ instance.id }} #id_calc_drive_discret_input');#}
-{#                    Disabling_IntegerField(receive.discret_output, '#calc_control-{{ instance.id }} #id_calc_drive_discret_output');#}
-{#                    Disabling_IntegerField(receive.analog_input, '#calc_control-{{ instance.id }} #id_calc_drive_analog_input');#}
-{#                    Disabling_IntegerField(receive.analog_output, '#calc_control-{{ instance.id }} #id_calc_drive_analog_output');#}
-{#                    Disabling_IntegerField(receive.profinet, '#calc_control-{{ instance.id }} #id_calc_drive_profinet');#}
-{#                    Disabling_IntegerField(receive.profibus, '#calc_control-{{ instance.id }} #id_calc_drive_profibus');#}
-{#                    Disabling_IntegerField(receive.rs485, '#calc_control-{{ instance.id }} #id_calc_drive_rs485');#}
-{##}
-{#                    Disabling_SelectField(receive.terminal_manufacturers, data.calc_drive_manufacturer_terminals, '#calc_control-{{ instance.id }} #id_calc_drive_manufacturer_terminals');#}
-{##}
-{##}
-{#                    var id ='';#}
-{#                    id = $( '#calc_control-{{ instance.id }}' ).closest( "form" ).attr('id');#}
-{#                    if (receive.general_checking){#}
-{#                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", false );#}
-{#                    }else{#}
-{#                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", true );#}
-{#                    }#}
+{#                     Функция обновления выпадающего списка по id согласно полученному из receive_dict#}
+                    function Update_SelectField(receive_dict,get_val_from_id, id) {
+                        var selected ='';
+                        $(id).html('<option value="" selected="selected">-----</option>');
+                        $.each(receive_dict, function (k, v) {
+                            if (get_val_from_id == v){selected = 'selected="selected"';} else {selected = '';}
+                            $(id).append('<option value="'+ v +'"'+ selected +'>'+ v +'</option>');
+                        });
+                    }
+{#                     Функция доступности Integer field по id согласно полученному bool переменной#}
+                    function Disabling_IntegerField(if_variable, id) {
+                        if (if_variable){$( id ).prop( "disabled", false );}
+                            else{$( id ).prop( "disabled", true );$( id ).val( "" );
+                        }
+                    }
+
+                    Update_SelectField(receive.manufacturers, data.calc_control_manufacturer, id + ' #id_calc_control_manufacturer');
+                    Update_SelectField(receive.series, data.calc_control_series, id + ' #id_calc_control_series');
+                    Update_SelectField(receive.cpu, data.calc_control_cpu, id + ' #id_calc_control_cpu');
+
+
+                    Disabling_IntegerField(receive.discret_input, id + ' #id_calc_control_discret_input');
+                    Disabling_IntegerField(receive.discret_output, id + ' #id_calc_control_discret_output');
+                    Disabling_IntegerField(receive.fast_discret_input, id + ' #id_calc_control_fast_discret_input');
+                    Disabling_IntegerField(receive.fast_discret_output, id + ' #id_calc_control_fast_discret_output');
+                    Disabling_IntegerField(receive.analog_0_10V_input, id + ' #id_calc_control_analog_0_10V_input');
+                    Disabling_IntegerField(receive.analog_0_10V_output, id + ' #id_calc_control_analog_0_10V_output');
+                    Disabling_IntegerField(receive.analog_0_20mA_input, id + ' #id_calc_control_analog_0_20mA_input');
+                    Disabling_IntegerField(receive.analog_0_20mA_output, id + ' #id_calc_control_analog_0_20mA_output');
+                    Disabling_IntegerField(receive.analog_rtd_input, id + ' #id_calc_control_analog_rtd_input');
+                    Disabling_IntegerField(receive.profinet, id + ' #id_calc_control_profinet');
+                    Disabling_IntegerField(receive.profibus, id + ' #id_calc_control_profibus');
+                    Disabling_IntegerField(receive.modbus_tcp, id + ' #id_calc_control_modbus_tcp');
+                    Disabling_IntegerField(receive.modbus_rtu, id + ' #id_calc_control_modbus_rtu');
+
+                    Update_SelectField(receive.terminal_manufacturers, data.calc_control_manufacturer_terminals, id + ' #id_calc_control_manufacturer_terminals');
+
+
+                    id = $( id ).closest( "form" ).attr('id');
+                    if (receive.general_checking){
+                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", false );
+                    }else{
+                        $( '#'+id +' #calc_submit_button' ).prop( "disabled", true );
+                    }
                 },
                 error: function () {
                     console.log("ERROR ajax POST")
@@ -236,10 +253,5 @@ $(document).off('change','#calc_control-{{ instance.id }}').on('change','#calc_c
 
 {#TODO: Прописать проверку полей запроса на наличие в выборке изделий по базе данных#}
 
-{#TODO: Сделать дополнительное поле выбора процессора если режим прог. реле или ПЛК#}
-{#TODO: Сделать дополнительное числовое поле коэф.запаса и добавить в настройках плагина чебокс - показывать и поле дефолтное название и имя поля#}
-{#TODO: Сделать в настройках плагина чебокс - показывать и поле дефолтное название и имя поля ко всем полям подбора управления#}
-
 {#TODO: Добавить к пользователю параметры предпочитаемые, так чтобы при отсутсвии выбора в форме комплетующие фильтровались согласно их#}
 
-{#TODO: Выбор процессора происходит если сам процессор не выбран в форме, а остальное зависит от кол-ва изделий#}

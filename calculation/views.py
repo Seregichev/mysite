@@ -225,6 +225,7 @@ def check_calc_control_fields(request):
         choise_terminal_manufacturer = data.get('calc_drive_manufacturer_terminals') or None
         choise_type_terminals = data.get('calc_drive_type_terminals') or None
 
+        choise_time_delay = data.get('calc_control_time_delay') or None
         choise_discret_input = data.get('calc_control_discret_input') or None
         choise_discret_output = data.get('calc_control_discret_output') or None
         choise_fast_discret_input = data.get('calc_control_fast_discret_input') or None
@@ -246,7 +247,7 @@ def check_calc_control_fields(request):
         items = Item.objects.filter(is_active=True)
 
         if choise_voltage:
-            items = items.filter(voltage=choise_voltage)
+            items = items.filter(voltage__gte=choise_voltage)
 
         terminal_manufacturers = items.filter(category__in=ItemCategory.objects.get(name=u'Клеммы') \
                                               .get_descendants(include_self=True)) \
@@ -282,10 +283,15 @@ def check_calc_control_fields(request):
         if choise_cpu:
             main_items = main_items.filter(series=choise_series)
 
+        time_delay = main_items.filter(variables__contains='time_delay').exists()
+
         adding_items = items
 
         if main_items:
-            adding_items = adding_items.filter(compatibility_code=main_items.first().compatibility_code)
+            if choise_type == 'Relay':
+                adding_items = adding_items.exclude(category=main_items.first().category)
+            else:
+                adding_items = adding_items.filter(compatibility_code=main_items.first().compatibility_code)
 
         discret_input = adding_items.filter(variables__contains='discret_input').exists()
 
@@ -326,6 +332,7 @@ def check_calc_control_fields(request):
         for one in cpu:
             return_dict['cpu'].append(one)
 
+        return_dict['time_delay'] = time_delay
         return_dict['discret_input'] = discret_input
         return_dict['discret_output'] = discret_output
         return_dict['fast_discret_input'] = fast_discret_input

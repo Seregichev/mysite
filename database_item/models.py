@@ -6,7 +6,6 @@ from django.utils.encoding import python_2_unicode_compatible
 from decimal import Decimal
 from tinymce.models import HTMLField
 from filer.fields.image import FilerImageField
-from djmoney.models.fields import MoneyField
 
 TYPE_CURRENT_CHOICES = (
     ('AC', 'AC'),

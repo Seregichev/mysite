@@ -236,6 +236,12 @@ class CalcControlForm (forms.Form):
                                                                           label=u'Modbus RTU',
                                                                           required=False)
 
+    calc_control_time_delay = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control',
+                                                                                         'pattern': '^[ 0-9]+$'}),
+                                                         label=u'Временные задержки',
+                                                         required=False,
+                                                         initial=3)
+
     calc_control_manufacturer_relays = forms.ModelChoiceField(queryset=ItemManufacturer.objects \
                                                                  .filter(item__category__in=ItemCategory.objects \
                                                                          .get(name=u'Промежуточное реле') \

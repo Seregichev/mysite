@@ -554,15 +554,38 @@ def add_control_items_into_estimate(request):
 
     choised_discret_input = request.POST.get('calc_control_discret_input') or 0
     choised_discret_output = request.POST.get('calc_control_discret_output') or 0
+    choised_fast_discret_input = request.POST.get('calc_control_fast_discret_input') or 0
+    choised_fast_discret_output = request.POST.get('calc_control_fast_discret_output') or 0
+    choised_analog_0_10V_input = request.POST.get('calc_control_analog_0_10V_input') or 0
+    choised_analog_0_10V_output = request.POST.get('calc_control_analog_0_10V_output') or 0
+    choised_analog_0_20mA_input = request.POST.get('calc_control_analog_0_20mA_input') or 0
+    choised_analog_0_20mA_output = request.POST.get('calc_control_analog_0_20mA_output') or 0
+    choised_analog_rtd_input = request.POST.get('calc_control_analog_rtd_input') or 0
+
+    choised_profinet = request.POST.get('calc_control_profinet') or 0
+    choised_profibus = request.POST.get('calc_control_profibus') or 0
+    choised_modbus_tcp = request.POST.get('calc_control_modbus_tcp') or 0
+    choised_modbus_rtu = request.POST.get('calc_control_modbus_rtu') or 0
 
     choised_manufacturer_relays = data["calc_control_manufacturer_relays"] or None
     choised_series_relays = data["calc_control_series_relays"] or None
 
+    # Получаем коэффициент запаса по запрошенным сигналам, а также устанавливаем мин. коэф-т запаса равным 1
     choised_reserve = request.POST.get('calc_control_reserve') or 1
     if float(choised_reserve) < 1: choised_reserve = 1
 
+    # Получаем фактическое кол-во запрашиваемых сигналов с учетом коэф. запаса
     discret_input = round(int(choised_discret_input)*float(choised_reserve), 0)
     discret_output = round(int(choised_discret_output)*float(choised_reserve), 0)
+    fast_discret_input = round(int(choised_fast_discret_input) * float(choised_reserve), 0)
+    fast_discret_output = round(int(choised_fast_discret_output) * float(choised_reserve), 0)
+    analog_0_10V_input = round(int(choised_analog_0_10V_input) * float(choised_reserve), 0)
+    analog_0_10V_output = round(int(choised_analog_0_10V_output) * float(choised_reserve), 0)
+    analog_0_20mA_input = round(int(choised_analog_0_20mA_input) * float(choised_reserve), 0)
+    analog_0_20mA_output = round(int(choised_analog_0_20mA_output) * float(choised_reserve), 0)
+    analog_rtd_input = round(int(choised_analog_rtd_input) * float(choised_reserve), 0)
+
+
 
     # буфер запрашиваемых сигналов заполняется как лист с вложенным в него словарем пары запрашиваемых сигналов
     signals = []
@@ -573,7 +596,14 @@ def add_control_items_into_estimate(request):
     # добавляем запрашиваемые сигналы в буфер
     if discret_input or discret_output:
         signals.append({"discret_input":discret_input, "discret_output": discret_output})
-    # TODO: Добавить остальные типы входов и выходов
+    if fast_discret_input or fast_discret_output:
+        signals.append({"fast_discret_input": fast_discret_input, "fast_discret_output": fast_discret_output})
+    if analog_0_10V_input or analog_0_10V_output:
+        signals.append({"analog_0_10V_input": analog_0_10V_input, "analog_0_10V_output": analog_0_10V_output})
+    if analog_0_20mA_input or analog_0_20mA_output:
+        signals.append({"analog_0_20mA_input": analog_0_20mA_input, "analog_0_20mA_output": analog_0_20mA_output})
+    if analog_rtd_input:
+        signals.append({"analog_rtd_input": analog_rtd_input, "": 0 })
 
     if settings.DEBUG:
         messages.info(request, u'Запрашиваемые сигналы: %s' % signals)
@@ -654,15 +684,23 @@ def add_control_items_into_estimate(request):
         # Если выбран конкретный cpu то ставим именно его
         if choised_cpu:
             cpu = cpu.get(name=choised_cpu)
+
+
         # Иначе подбираем процессор
         else:
-            # Если в запрашиваемых сигналах присутсвуют дискретные входа, то фильтруем запрос процессоров на большее кол-во максимальных входов
-            if discret_input:
-                cpu = cpu.filter(variables__gte={"max_discret_inputs": discret_input})
-            # Также поступаем и с дискретными входами
-            if discret_output:
-                cpu = cpu.filter(variables__gte={"max_discret_outputs": discret_output})
-            # TODO: К дискретным входам и выходам сложить быстрые дискртеные входы и выходы
+            # Если в запрашиваемых сигналах присутсвуют дискретные входа, то фильтруем запрос процессоров на большее кол-во максимальных типов сигналов
+            if discret_input or fast_discret_input:
+                cpu = cpu.filter(variables__gte={"max_discret_inputs": discret_input + fast_discret_input})
+
+            if discret_output or fast_discret_output:
+                cpu = cpu.filter(variables__gte={"max_discret_outputs": discret_output + fast_discret_input})
+
+            if analog_0_10V_input or analog_0_20mA_input or analog_rtd_input:
+                cpu = cpu.filter(variables__gte={
+                    "max_analog_inputs": analog_0_10V_input + analog_0_20mA_input + analog_rtd_input})
+
+            if analog_0_10V_output or analog_0_20mA_output:
+                cpu = cpu.filter(variables__gte={"max_analog_outputs": analog_0_10V_output + analog_0_20mA_output})
 
             # Сортируем запрос процессоров по id (порядковому числу их добавления БД)
             cpu = cpu.order_by('id')
@@ -801,3 +839,7 @@ def add_control_items_into_estimate(request):
         messages.info(request, u'Изделия подобрать невозможно. Упростите критерии.')
 
     return request
+
+# TODO: Добавить подбор коммуникационых модулей ПЛК, а также вторичных приборов для релейной схемы
+
+# TODO: Добавить всю линейку модулей, чтобы правильно подбирался ПЛК и Реле
